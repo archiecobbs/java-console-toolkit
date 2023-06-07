@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.dellroad</groupId>
+        <artifactId>java-console-toolkit</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>java-console-toolkit-ssh-simple</artifactId>
+    <name>Java Console Toolkit Simple Console SSH Server</name>
+    <url>https://github.com/archiecobbs/java-console-toolkit</url>
+    <distributionManagement>
+        <site>
+            <id>${project.artifactId}-site</id>
+            <url>file://${project.basedir}/../site/${project.artifactId}/</url>
+        </site>
+    </distributionManagement>
+    <properties>
+        <automatic.module.name>${jct.package.root}.ssh.simple</automatic.module.name>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.parent.artifactId}-ssh</artifactId>
+        </dependency>
+    </dependencies>
+</project>
