@@ -9,6 +9,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -86,32 +88,22 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
         this.charset = SshUtil.inferCharacterEncoding(this.env).orElse(StandardCharsets.UTF_8);
         this.locale = SshUtil.inferLocale(this.env).orElseGet(Locale::getDefault);
 
-        // Start command and wait for it to complete
-        if ((this.session = this.start()) == null)
+        // Create the command session
+        if ((this.session = this.createSession()) == null)
             throw new IOException("null session returned from " + this.getClass().getName() + ".start()");
-/*
-        final Future<?> future = this.session.getCompletionFuture();
-        try {
-            future.get();
-        } catch (CancellationException e) {
-            // ignore
-        } catch (InterruptedException e) {
-            CrNlPrintStream.of(this.err).println("Interrupted");
-            future.cancel(true);
-        } catch (ExecutionException e) {
-            this.setExitValue(1);
-            e.getCause().printStackTrace(CrNlPrintStream.of(this.err));
-        }
-*/
+
+        // Spawn a new thread to execute session
+        final Thread sessionThread = this.createSessionThread(this::executeSessionWrapper);
+        final String threadName = this.getThreadName(channel, env);
+        if (threadName != null)
+            sessionThread.setName(threadName);
+        sessionThread.start();
     }
 
     @Override
     public void destroy(ChannelSession channel) throws Exception {
-        if (this.session != null) {
-            this.session.close();
-            if (this.exitCallback != null)
-                this.exitCallback.onExit(this.session.getExitValue(), false);
-        }
+        if (this.session != null)
+            this.session.interrupt();
         for (Closeable c : new Closeable[] { this.err, this.out, this.in }) {
             try {
                 if (c != null)
@@ -122,15 +114,62 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
         }
     }
 
+// Internal Methods
+
+    private void executeSessionWrapper() {
+        int exitValue = -1;
+        try {
+            try {
+                exitValue = this.executeSession();
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        } catch (Throwable t) {
+            t.printStackTrace(CrNlPrintStream.of(this.err, this.charset));
+        } finally {
+            if (this.exitCallback != null)
+                this.exitCallback.onExit(exitValue, false);
+        }
+    }
+
+    protected int executeSession() throws InterruptedException {
+        return this.session.execute();
+    }
+
+    protected Thread createSessionThread(Runnable action) {
+        return new Thread(action);
+    }
+
+    protected String getThreadName(ChannelSession channel, Environment env) {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("SSH-Client");
+        final SocketAddress clientAddress = channel.getSession().getClientAddress();
+        if (clientAddress instanceof InetSocketAddress) {
+            final InetSocketAddress inetAddress = (InetSocketAddress)clientAddress;
+            buf.append('[')
+              .append(inetAddress.getHostString())
+              .append(':')
+              .append(inetAddress.getPort())
+              .append(']');
+        }
+        final String username = env.getEnv().get(Environment.ENV_USER);
+        if (username != null) {
+            buf.append('(')
+              .append(username)
+              .append(')');
+        }
+        return buf.toString();
+    }
+
 // Subclass Hooks
 
     /**
-     * Start the (asynchronous) execution of this command.
+     * Create a {@link JctSession} that will implement this command.
      *
      * @return newly created session
      * @throws IOException if an I/O error occurs
      */
-    protected abstract S start() throws IOException;
+    protected abstract S createSession() throws IOException;
 
     /**
      * Handle an incoming signal from the SSH client terminal.

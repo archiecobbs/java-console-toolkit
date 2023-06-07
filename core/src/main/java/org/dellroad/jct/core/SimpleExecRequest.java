@@ -13,12 +13,11 @@ import java.util.Map;
 /**
  * Straightforward implementation of the {@link ExecRequest} interface.
  */
-public class SimpleExecRequest implements ExecRequest {
+public class SimpleExecRequest extends AbstractRequest implements ExecRequest {
 
     private final InputStream in;
     private final PrintStream out;
     private final PrintStream err;
-    private final Map<String, String> env;
     private final String command;
 
     /**
@@ -32,6 +31,7 @@ public class SimpleExecRequest implements ExecRequest {
      * @throws IllegalArgumentException if any parameter other than {@code env} is null
      */
     public SimpleExecRequest(InputStream in, PrintStream out, PrintStream err, Map<String, String> env, String command) {
+        super(env);
 
         // Validate
         if (in == null)
@@ -47,7 +47,6 @@ public class SimpleExecRequest implements ExecRequest {
         this.in = in;
         this.out = out;
         this.err = err;
-        this.env = env;
         this.command = command;
     }
 
@@ -66,11 +65,6 @@ public class SimpleExecRequest implements ExecRequest {
     @Override
     public PrintStream getErrorStream() {
         return this.err;
-    }
-
-    @Override
-    public Map<String, String> getEnvironment() {
-        return this.env != null ? this.env : Collections.emptyMap();
     }
 
     @Override

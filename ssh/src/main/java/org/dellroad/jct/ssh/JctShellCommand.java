@@ -13,6 +13,7 @@ import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctShellSession;
+import org.dellroad.jct.core.SimpleShellRequest;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -28,7 +29,7 @@ public class JctShellCommand extends AbstractCommand<JctShellSession> {
 // AbstractCommand
 
     @Override
-    protected JctShellSession start() throws IOException {
+    protected JctShellSession createSession() throws IOException {
 
         // Build terminal
         TerminalBuilder builder = TerminalBuilder.builder()
@@ -49,7 +50,7 @@ public class JctShellCommand extends AbstractCommand<JctShellSession> {
         SshUtil.updateSize(this.terminal, this.env);
 
         // Start shell
-        return this.console.newShellSession(terminal);
+        return this.console.newShellSession(new SimpleShellRequest(terminal, this.env.getEnv()));
     }
 
     @Override

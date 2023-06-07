@@ -29,7 +29,7 @@ public class JctExecCommand extends AbstractCommand<JctExecSession> {
 // AbstractCommand
 
     @Override
-    protected JctExecSession start() throws IOException {
+    protected JctExecSession createSession() throws IOException {
 
         // Create printable output streams using the SSH client's character encoding
         final PrintStream pout = CrNlPrintStream.of(this.out, this.charset);

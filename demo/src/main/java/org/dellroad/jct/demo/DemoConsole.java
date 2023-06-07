@@ -8,13 +8,13 @@ package org.dellroad.jct.demo;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.IntSupplier;
 
-import org.dellroad.jct.core.AbstractActivity;
+import org.dellroad.jct.core.AbstractJctSession;
 import org.dellroad.jct.core.ExecRequest;
 import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctExecSession;
 import org.dellroad.jct.core.JctShellSession;
+import org.dellroad.jct.core.ShellRequest;
 import org.jline.terminal.Terminal;
 
 /**
@@ -37,7 +37,7 @@ public class DemoConsole implements JctConsole {
             args.removeFirst();
 
         // Determine command to execute
-        final IntSupplier action;
+        final Action action;
         if (args.isEmpty())
             action = () -> 0;
         else {
@@ -63,6 +63,12 @@ public class DemoConsole implements JctConsole {
                     return 0;
                 };
                 break;
+            case "sleep":
+                action = () -> {
+                    Thread.sleep(1000 * Integer.parseInt(args.removeFirst(), 10));
+                    return 0;
+                };
+                break;
             default:
                 action = () -> {
                     request.getOutputStream().println(String.format("%s: command not found", command));
@@ -73,45 +79,38 @@ public class DemoConsole implements JctConsole {
         }
 
         // Create and return new session
-        class Session extends AbstractActivity implements JctExecSession {
+        class Session extends AbstractJctSession implements JctExecSession {
 
             private volatile int exitValue;
 
             @Override
-            protected void performActivity() throws Exception {
-                System.err.println("Demo Session performActivity() starting");
-                this.exitValue = action.getAsInt();
-                System.err.println("Demo Session performActivity() done, exitValue=" + this.exitValue);
+            protected int doExecute() throws InterruptedException {
+                System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() starting");
+                final int exitValue;
+                try {
+                    exitValue = action.execute();
+                } catch (InterruptedException | RuntimeException e) {
+                    System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() caught " + e);
+                    throw e;
+                }
+                System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() done, exitValue=" + this.exitValue);
+                return exitValue;
             }
 
             @Override
             public ExecRequest getExecRequest() {
                 return request;
             }
-
-            @Override
-            public int getExitValue() {
-                System.err.println("Demo Session returing exitValue=" + this.exitValue);
-                return this.exitValue;
-            }
-
-            @Override
-            protected void internalClose() {
-                System.err.println("Demo Session internalClose()");
-                return this.exitValue;
-            }
         }
-        final Session session = new Session();
-        session.start();
-        return session;
+        return new Session();
     }
 
     @Override
-    public JctShellSession newShellSession(Terminal terminal) {
+    public JctShellSession newShellSession(ShellRequest request) {
 
         // Validate
-        if (terminal == null)
-            throw new IllegalArgumentException("null terminal");
+        if (request == null)
+            throw new IllegalArgumentException("null request");
 
         // TODO
         JctShellSession session = null;
@@ -119,5 +118,12 @@ public class DemoConsole implements JctConsole {
 
         // Done
         return session;
+    }
+
+// Action
+
+    @FunctionalInterface
+    private interface Action {
+        int execute() throws InterruptedException;
     }
 }

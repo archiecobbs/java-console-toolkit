@@ -13,9 +13,9 @@ import org.jline.terminal.Terminal;
 public interface JctShellSession extends JctSession {
 
     /**
-     * Get the associated {@link Terminal}.
+     * Get the request from which this session was created.
      *
-     * @return the interactive shell's associated {@link Terminal}
+     * @return original command request
      */
-    Terminal getTerminal();
+    ShellRequest getShellRequest();
 }

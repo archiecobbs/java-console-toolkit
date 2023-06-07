@@ -24,12 +24,12 @@ public interface JctConsole {
     /**
      * Create a new interactive console session.
      *
-     * @param terminal JLine terminal already configured approrpriately
+     * @param request interactive shell request
      * @return interactive session
      * @throws IOException if an I/O error occurs
-     * @throws IllegalArgumentException if {@code terminal} is null
+     * @throws IllegalArgumentException if {@code request} is null
      */
-    JctShellSession newShellSession(Terminal terminal) throws IOException;
+    JctShellSession newShellSession(ShellRequest request) throws IOException;
 
     /**
      * Create a new non-interactive console session in which to execute a single command.

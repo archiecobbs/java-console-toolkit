@@ -5,48 +5,37 @@
 
 package org.dellroad.jct.jshell;
 
-import org.dellroad.jct.core.AbstractActivity;
+//import jdk.jshell.tool.JavaShellToolBuilder;
+
+import org.dellroad.jct.core.AbstractJctSession;
 import org.dellroad.jct.core.JctShellSession;
+import org.dellroad.jct.core.ShellRequest;
 import org.jline.terminal.Terminal;
 
 /**
  * Java Console Toolkit demonstration console.
  */
-public class JShellSession extends AbstractActivity implements JctShellSession {
+public class JShellSession extends AbstractJctSession implements JctShellSession {
 
-    private final Terminal terminal;
+    private final ShellRequest request;
 
-    private volatile int exitValue;
-
-    public JShellSession(Terminal terminal) {
-        if (terminal == null)
-            throw new IllegalArgumentException("null terminal");
-        this.terminal = terminal;
+    public JShellSession(ShellRequest request) {
+        if (request == null)
+            throw new IllegalArgumentException("null request");
+        this.request = request;
     }
 
 // JctShellSession
 
     @Override
-    public Terminal getTerminal() {
-        return this.terminal;
+    public ShellRequest getShellRequest() {
+        return this.request;
     }
 
-// AbstractActivity
+// AbstractJctSession
 
     @Override
-    protected void handleException(Throwable t) {
-    }
-
-    @Override
-    protected void internalClose() {
-    }
-
-    @Override
-    protected void performActivity() throws Exception {
-    }
-
-    @Override
-    public int getExitValue() {
-        return this.exitValue;
+    protected int doExecute() throws InterruptedException {
+        return 1;
     }
 }
