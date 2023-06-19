@@ -5,8 +5,6 @@
 
 package org.dellroad.jct.core;
 
-import org.jline.terminal.Terminal;
-
 /**
  * A {@link JctSession} associated with an interactive shell.
  */

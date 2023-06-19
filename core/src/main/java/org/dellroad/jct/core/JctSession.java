@@ -5,8 +5,6 @@
 
 package org.dellroad.jct.core;
 
-import java.io.Closeable;
-
 /**
  * A session associated with a {@link JctConsole}.
  */

@@ -7,7 +7,6 @@ package org.dellroad.jct.core;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.Map;
 
 /**

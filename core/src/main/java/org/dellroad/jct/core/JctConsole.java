@@ -7,8 +7,6 @@ package org.dellroad.jct.core;
 
 import java.io.IOException;
 
-import org.jline.terminal.Terminal;
-
 /**
  * A command line interface (CLI) console.
  *

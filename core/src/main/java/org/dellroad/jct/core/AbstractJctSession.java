@@ -5,9 +5,6 @@
 
 package org.dellroad.jct.core;
 
-import java.io.Closeable;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Support superclass for {@link JctSession} implementations.
  */
@@ -36,7 +33,7 @@ public abstract class AbstractJctSession implements JctSession {
     }
 
     @Override
-    public synchronized final boolean interrupt() {
+    public final synchronized boolean interrupt() {
         if (!this.executed || this.executionThread == null)
             return false;
         this.doInterrupt(this.executionThread);
@@ -70,7 +67,7 @@ public abstract class AbstractJctSession implements JctSession {
      * NOTE: When this method is invoked, the current instance will be locked.
      *
      * @param thread the thread currently executing {@link #execute}
-     * @throws IllegalArgumentExceptoin if {@code thread} is null
+     * @throws IllegalArgumentException if {@code thread} is null
      */
     protected void doInterrupt(Thread thread) {
         if (thread == null)

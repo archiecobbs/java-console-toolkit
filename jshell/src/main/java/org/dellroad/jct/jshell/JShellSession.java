@@ -10,7 +10,7 @@ package org.dellroad.jct.jshell;
 import org.dellroad.jct.core.AbstractJctSession;
 import org.dellroad.jct.core.JctShellSession;
 import org.dellroad.jct.core.ShellRequest;
-import org.jline.terminal.Terminal;
+//import org.jline.terminal.Terminal;
 
 /**
  * Java Console Toolkit demonstration console.

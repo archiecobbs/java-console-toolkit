@@ -15,7 +15,7 @@ import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctExecSession;
 import org.dellroad.jct.core.JctShellSession;
 import org.dellroad.jct.core.ShellRequest;
-import org.jline.terminal.Terminal;
+//import org.jline.terminal.Terminal;
 
 /**
  * Java Console Toolkit demonstration console.
@@ -81,19 +81,19 @@ public class DemoConsole implements JctConsole {
         // Create and return new session
         class Session extends AbstractJctSession implements JctExecSession {
 
-            private volatile int exitValue;
-
             @Override
             protected int doExecute() throws InterruptedException {
-                System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() starting");
+                System.err.println(String.format("%s: demo Session performActivity() starting", Thread.currentThread().getName()));
                 final int exitValue;
                 try {
                     exitValue = action.execute();
                 } catch (InterruptedException | RuntimeException e) {
-                    System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() caught " + e);
+                    System.err.println(String.format(
+                      "%s: demo Session performActivity() caught %s", Thread.currentThread().getName(), e));
                     throw e;
                 }
-                System.err.println(Thread.currentThread().getName() + ": demo Session performActivity() done, exitValue=" + this.exitValue);
+                System.err.println(String.format(
+                  "%s: demo Session performActivity() done, exitValue=%d", Thread.currentThread().getName(), exitValue));
                 return exitValue;
             }
 
