@@ -22,8 +22,12 @@ public interface JctConsole {
     /**
      * Create a new interactive console session.
      *
+     * <p>
+     * If the request fails, this method should return null and write an error message to
+     * {@code request.}{@link ShellRequest#getTerminal getTerminal()}.
+     *
      * @param request interactive shell request
-     * @return interactive session
+     * @return interactive session, or null on failure
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if {@code request} is null
      */
@@ -36,11 +40,14 @@ public interface JctConsole {
      * The command to execute is returned by {@code request.}{@link ExecRequest#getCommand getCommand()};
      * typically this string contains a command name and zero or more arguments separated by whitespace.
      * However, the implementation is free to determine if/how this string should be parsed (e.g., whether to
-     * support quoting, backslash escapes, etc.). If a parse fails, typically an error is written to
+     * support quoting, backslash escapes, etc.).
+     *
+     * <p>
+     * If the request fails, this method should return null and write an error message to
      * {@code request.}{@link ExecRequest#getErrorStream getErrorStream()}.
      *
      * @param request command request
-     * @return non-interactive session
+     * @return non-interactive session, or null on failure
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if {@code request} null
      */

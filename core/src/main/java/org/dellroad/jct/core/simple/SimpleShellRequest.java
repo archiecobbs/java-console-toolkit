@@ -3,10 +3,11 @@
  * Copyright (C) 2023 Archie L. Cobbs. All rights reserved.
  */
 
-package org.dellroad.jct.core;
+package org.dellroad.jct.core.simple;
 
 import java.util.Map;
 
+import org.dellroad.jct.core.ShellRequest;
 import org.jline.terminal.Terminal;
 
 /**

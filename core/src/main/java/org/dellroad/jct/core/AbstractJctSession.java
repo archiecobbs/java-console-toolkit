@@ -10,13 +10,32 @@ package org.dellroad.jct.core;
  */
 public abstract class AbstractJctSession implements JctSession {
 
+    protected final JctConsole console;
+
     private Thread executionThread;
     private boolean executed;
+
+    /**
+     * Constructor.
+     *
+     * @param console associated console
+     * @throws IllegalArgumentException if {@code console} is null
+     */
+    protected AbstractJctSession(JctConsole console) {
+        if (console == null)
+            throw new IllegalArgumentException("null console");
+        this.console = console;
+    }
 
 // JctSession
 
     @Override
-    public final int execute() throws InterruptedException {
+    public JctConsole getConsole() {
+        return this.console;
+    }
+
+    @Override
+    public boolean execute() throws InterruptedException {
         synchronized (this) {
             if (this.executed)
                 throw new IllegalStateException("already executed");
@@ -33,11 +52,8 @@ public abstract class AbstractJctSession implements JctSession {
     }
 
     @Override
-    public final synchronized boolean interrupt() {
-        if (!this.executed || this.executionThread == null)
-            return false;
-        this.doInterrupt(this.executionThread);
-        return true;
+    public synchronized boolean interrupt() {
+        return this.executed && this.executionThread != null && this.doInterrupt(this.executionThread);
     }
 
 // Subclass Methods
@@ -48,10 +64,10 @@ public abstract class AbstractJctSession implements JctSession {
      * <p>
      * This method is invoked by {@link #execute} to do the actual work.
      *
-     * @return session exit value
+     * @return true if successful, false if an error occurred
      * @throws InterruptedException if the current thread is interrupted
      */
-    protected abstract int doExecute() throws InterruptedException;
+    protected abstract boolean doExecute() throws InterruptedException;
 
     /**
      * Interrupt execution.
@@ -67,11 +83,13 @@ public abstract class AbstractJctSession implements JctSession {
      * NOTE: When this method is invoked, the current instance will be locked.
      *
      * @param thread the thread currently executing {@link #execute}
+     * @return true if execution was interrupted, false if it was not possible to interrupt execution
      * @throws IllegalArgumentException if {@code thread} is null
      */
-    protected void doInterrupt(Thread thread) {
+    protected boolean doInterrupt(Thread thread) {
         if (thread == null)
             throw new IllegalStateException("null thread");
         thread.interrupt();
+        return true;
     }
 }

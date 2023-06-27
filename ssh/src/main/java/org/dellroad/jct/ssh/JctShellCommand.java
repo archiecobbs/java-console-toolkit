@@ -13,7 +13,7 @@ import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctShellSession;
-import org.dellroad.jct.core.SimpleShellRequest;
+import org.dellroad.jct.core.simple.SimpleShellRequest;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;

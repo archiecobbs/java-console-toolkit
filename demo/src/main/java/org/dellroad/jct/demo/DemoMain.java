@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 
+import org.dellroad.jct.core.simple.SimpleConsole;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 
 /**
@@ -88,7 +89,7 @@ public class DemoMain {
         }
 
         // Create console
-        final DemoConsole demoConsole = new DemoConsole();
+        final SimpleConsole demoConsole = new SimpleConsole();
 
         // Set up SSH server
         if (ssh) {

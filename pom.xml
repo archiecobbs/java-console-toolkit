@@ -21,7 +21,6 @@
         <module>picocli</module>
         <module>spring</module>
         <module>ssh</module>
-        <module>ssh-simple</module>
         <module>syscon</module>
     </modules>
     <licenses>

@@ -1,18 +1,8 @@
 <FindBugsFilter>
     <Match>
-        <Class name="org.dellroad.jct.core.SimpleExecRequest"/>
         <Bug pattern="EI_EXPOSE_REP"/>
     </Match>
     <Match>
-        <Class name="org.dellroad.jct.core.SimpleExecRequest"/>
-        <Bug pattern="EI_EXPOSE_REP2"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.core.SimpleShellRequest"/>
-        <Bug pattern="EI_EXPOSE_REP"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.core.SimpleShellRequest"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 </FindBugsFilter>

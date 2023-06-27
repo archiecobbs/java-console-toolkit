@@ -11,9 +11,10 @@ import java.io.PrintStream;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
+import org.dellroad.jct.core.CrNlPrintStream;
 import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctExecSession;
-import org.dellroad.jct.core.SimpleExecRequest;
+import org.dellroad.jct.core.simple.SimpleExecRequest;
 
 public class JctExecCommand extends AbstractCommand<JctExecSession> {
 

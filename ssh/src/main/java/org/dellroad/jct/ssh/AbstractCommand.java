@@ -21,6 +21,7 @@ import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
+import org.dellroad.jct.core.CrNlPrintStream;
 import org.dellroad.jct.core.JctConsole;
 import org.dellroad.jct.core.JctSession;
 import org.slf4j.Logger;
@@ -133,7 +134,7 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
     }
 
     protected int executeSession() throws InterruptedException {
-        return this.session.execute();
+        return this.session.execute() ? 0 : 1;
     }
 
     protected Thread createSessionThread(Runnable action) {
