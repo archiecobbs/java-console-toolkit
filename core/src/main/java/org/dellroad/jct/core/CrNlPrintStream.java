@@ -8,6 +8,8 @@ package org.dellroad.jct.core;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.jline.terminal.Terminal;
 
@@ -35,7 +37,7 @@ public class CrNlPrintStream extends PrintStream {
      * @return new stream
      * @throws IllegalArgumentException if {@code out} is null
      */
-    public static PrintStream of(OutputStream out) {
+    public static CrNlPrintStream of(OutputStream out) {
         return CrNlPrintStream.of(out, StandardCharsets.UTF_8);
     }
 
@@ -47,13 +49,13 @@ public class CrNlPrintStream extends PrintStream {
      * @return new stream
      * @throws IllegalArgumentException if either parameter is null
      */
-    public static PrintStream of(OutputStream out, Charset charset) {
+    public static CrNlPrintStream of(OutputStream out, Charset charset) {
         if (out == null)
             throw new IllegalArgumentException("null out");
         if (charset == null)
             throw new IllegalArgumentException("null charset");
         try {
-            return new CrNlPrintStream(out, charset.name());        // using JDK 8 compatible constructors
+            return new CrNlPrintStream(out, true, charset.name());        // using JDK 8 compatible constructors
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("unexpected error", e);
         }
@@ -69,7 +71,7 @@ public class CrNlPrintStream extends PrintStream {
     public static CrNlPrintStream of(Terminal terminal) {
         if (terminal == null)
             throw new IllegalArgumentException("null terminal");
-        return CrNlPrintStream.of(terminal.output(), terminal.encoding().name());
+        return CrNlPrintStream.of(terminal.output(), terminal.encoding());
     }
 
 // These are required to workaround this JDK bug: https://bugs.openjdk.org/browse/JDK-8307863
