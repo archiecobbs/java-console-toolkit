@@ -42,6 +42,7 @@ public class SimpleConsole implements JctConsole {
     public SimpleConsole() {
         this.commands.put("echo", new EchoCommand());
         this.commands.put("help", new HelpCommand());
+        this.commands.put("exit", new QuitCommand());
         this.commands.put("quit", new QuitCommand());
         this.commands.put("date", new DateCommand());
         this.commands.put("sleep", new SleepCommand());
@@ -166,7 +167,7 @@ public class SimpleConsole implements JctConsole {
     }
 
     protected String getPrompt() {
-        return "$ ";
+        return "jct> ";
     }
 
 // SimpleCompleter

@@ -10,9 +10,15 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.dellroad.jct.core.JctShellSession;
+import org.dellroad.jct.core.JctUtils;
 import org.dellroad.jct.core.simple.SimpleConsole;
+import org.dellroad.jct.core.simple.SimpleShellRequest;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 /**
  * Demonstration of various Java Console Toolkit components.
@@ -91,7 +97,7 @@ public class DemoMain {
         // Create console
         final SimpleConsole demoConsole = new SimpleConsole();
 
-        // Set up SSH server
+        // Start SSH server
         if (ssh) {
             if (sshHostKeyFile == null) {
                 System.err.println(String.format("%s: \"%s\" is required for SSH server", this.getName(), "--ssh-host-key-file"));
@@ -114,15 +120,37 @@ public class DemoMain {
             System.err.println(String.format("%s: started SSH server on port %d", this.getName(), sshListenPort));
         }
 
-        // Start system console
-        System.out.println("(system console goes here)");
-        while (true) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                System.err.println(String.format("%s: interrupted", this.getName()));
-                return 1;
-            }
+        // Create system terminal
+        final AtomicReference<JctShellSession> shellSessionRef = new AtomicReference<>();
+        final Terminal terminal;
+        try {
+            terminal = TerminalBuilder.builder()
+              .name("JCT")
+              .system(true)
+              .nativeSignals(true)
+              .signalHandler(JctUtils.interrruptHandler(shellSessionRef::get, Terminal.SignalHandler.SIG_DFL))
+              .build();
+        } catch (IOException e) {
+            System.err.println(String.format("%s: error creating system terminal: %s", this.getName(), e));
+            return 1;
+        }
+
+        // Create system console
+        final JctShellSession shellSession;
+        try {
+            shellSession = demoConsole.newShellSession(new SimpleShellRequest(terminal, System.getenv()));
+        } catch (IOException e) {
+            System.err.println(String.format("%s: error creating shell session: %s", this.getName(), e));
+            return 1;
+        }
+        shellSessionRef.set(shellSession);
+
+        // Execute system console
+        try {
+            return shellSession.execute() ? 0 : 1;
+        } catch (InterruptedException e) {
+            System.err.println(String.format("%s: interrupted", this.getName()));
+            return 1;
         }
     }
 

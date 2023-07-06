@@ -21,7 +21,6 @@
         <module>picocli</module>
         <module>spring</module>
         <module>ssh</module>
-        <module>syscon</module>
     </modules>
     <licenses>
         <license>
@@ -57,6 +56,7 @@
         <dellroad.stuff.version>2.5.9</dellroad.stuff.version>
         <guava.version>31.1-jre</guava.version>
         <jline.version>3.23.0</jline.version>
+        <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.7</slf4j.version>
         <sshd.version>2.10.0</sshd.version>
         <testng.version>7.7.1</testng.version>
@@ -91,6 +91,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
 
             <!-- Guava -->
@@ -158,17 +163,7 @@
             </dependency>
             <dependency>
                 <groupId>org.dellroad</groupId>
-                <artifactId>java-console-toolkit-ssh-simple</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dellroad</groupId>
                 <artifactId>java-console-toolkit-spring</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dellroad</groupId>
-                <artifactId>java-console-toolkit-syscon</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -358,8 +353,6 @@
                     <effort>Max</effort>
                     <threshold>Default</threshold>
                     <xmlOutput>true</xmlOutput>
-                    <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
                     <excludeFilterFile>${project.basedir}/src/spotbugs/spotbugs-exclude.xml</excludeFilterFile>
                     <failOnError>true</failOnError>
                 </configuration>

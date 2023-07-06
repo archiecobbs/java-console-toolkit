@@ -5,7 +5,6 @@
 
 package org.dellroad.jct.core.simple;
 
-import java.util.Date;
 import java.util.List;
 
 import org.dellroad.jct.core.JctSession;
