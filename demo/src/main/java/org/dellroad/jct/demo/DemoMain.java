@@ -32,8 +32,8 @@ public class DemoMain {
     public int run(String[] args) {
 
         // Parse command line
-        File sshHostKeyFile = null;
-        File sshAuthKeysFile = getDefaultAuthKeysFile();
+        File sshHostKeyFile = this.getDefaultHostKeyFile();
+        File sshAuthKeysFile = this.getDefaultAuthKeysFile();
         int sshListenPort = this.getDefaultListenPort();
         final ArrayDeque<String> params = new ArrayDeque<>(Arrays.asList(args));
         boolean ssh = false;
@@ -42,13 +42,15 @@ public class DemoMain {
         while (!params.isEmpty() && params.peekFirst().startsWith("-")) {
             String option = params.removeFirst();
             switch (option) {
+            case "--ssh":
+                ssh = true;
+                break;
             case "--ssh-auth-keys-file":
                 if (params.isEmpty()) {
                     this.usage(System.err);
                     return 1;
                 }
                 sshAuthKeysFile = new File(params.removeFirst());
-                ssh = true;
                 break;
             case "--ssh-host-key-file":
                 if (params.isEmpty()) {
@@ -56,7 +58,6 @@ public class DemoMain {
                     return 1;
                 }
                 sshHostKeyFile = new File(params.removeFirst());
-                ssh = true;
                 break;
             case "--ssh-listen-port":
                 if (params.isEmpty()) {
@@ -73,7 +74,6 @@ public class DemoMain {
                     this.usage(System.err);
                     return 1;
                 }
-                ssh = true;
                 break;
             case "--help":
                 this.usage(System.err);
@@ -99,10 +99,6 @@ public class DemoMain {
 
         // Start SSH server
         if (ssh) {
-            if (sshHostKeyFile == null) {
-                System.err.println(String.format("%s: \"%s\" is required for SSH server", this.getName(), "--ssh-host-key-file"));
-                return 1;
-            }
             SimpleConsoleSshServer server = SimpleConsoleSshServer.builder()
               .console(demoConsole)
               .hostKey(sshHostKeyFile.toPath())
@@ -159,11 +155,11 @@ public class DemoMain {
         out.println(String.format("    %s [options]", this.getName()));
         out.println(String.format("Options:"));
         out.println(String.format(
-          "    --ssh-auth-keys-file path    Specify SSH authorized users file (default %s)", this.getDefaultAuthKeysFile()));
+          "    --ssh                        Enable SSH server"));
         out.println(String.format(
           "    --ssh-auth-keys-file path    Specify SSH authorized users file (default %s)", this.getDefaultAuthKeysFile()));
         out.println(String.format(
-          "    --ssh-host-key-file path     Specify SSH host key file (required for SSH server)"));
+          "    --ssh-host-key-file path     Specify SSH host key file (default %s)", this.getDefaultHostKeyFile()));
         out.println(String.format(
           "    --ssh-listen-port port       Specify SSH server TCP port (default %d)", this.getDefaultListenPort()));
         out.println(String.format(
@@ -178,6 +174,10 @@ public class DemoMain {
             file = String.format("%s%s%s%s%s", homeDir, fs, ".ssh", fs, file);
         }
         return new File(file);
+    }
+
+    public File getDefaultHostKeyFile() {
+        return new File("hostkey");
     }
 
     public int getDefaultListenPort() {
