@@ -3,15 +3,16 @@
  * Copyright (C) 2023 Archie L. Cobbs. All rights reserved.
  */
 
-package org.dellroad.jct.core.simple;
+package org.dellroad.jct.core.simple.command;
 
 import java.util.Date;
 import java.util.List;
 
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.simple.AbstractSimpleCommand;
 
 /**
- * A simple "date" command that can be used with a {@link SimpleConsole}.
+ * A simple "date" command.
  */
 public class DateCommand extends AbstractSimpleCommand {
 
@@ -20,14 +21,14 @@ public class DateCommand extends AbstractSimpleCommand {
     }
 
     @Override
-    public boolean execute(JctSession session, String name, List<String> args) throws InterruptedException {
+    public int execute(ConsoleSession<?, ?> session, String name, List<String> args) throws InterruptedException {
         switch (args.size()) {
         case 0:
             session.getOutputStream().println(new Date());
-            return true;
+            return 0;
         default:
             this.printUsage(session, name);
-            return false;
+            return 1;
         }
     }
 }

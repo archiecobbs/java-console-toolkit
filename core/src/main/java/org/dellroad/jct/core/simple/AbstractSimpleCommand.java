@@ -5,7 +5,7 @@
 
 package org.dellroad.jct.core.simple;
 
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
 
 /**
  * Support superclass for {@link SimpleCommand} implementations.
@@ -53,17 +53,7 @@ public abstract class AbstractSimpleCommand implements SimpleCommand {
 
 // Internal Methods
 
-    protected SimpleConsole getSimpleConsole(JctSession session, String name) {
-        try {
-            return (SimpleConsole)session.getConsole();
-        } catch (ClassCastException e) {
-            session.getErrorStream().println(String.format(
-              "Error: this \"%s\" command requires a %s", name, SimpleConsole.class.getName()));
-            return null;
-        }
-    }
-
-    protected void printUsage(JctSession session, String name) {
+    protected void printUsage(ConsoleSession<?, ?> session, String name) {
         session.getErrorStream().print(String.format("Usage: %s", name));
         final String args = this.getUsage(name);
         if (args != null && !args.isEmpty())

@@ -6,11 +6,15 @@
 package org.dellroad.jct.core;
 
 /**
- * Support superclass for {@link JctSession} implementations.
+ * Support superclass for {@link ConsoleSession} implementations.
+ *
+ * @param <O> associated owner type
+ * @param <R> associated request type
  */
-public abstract class AbstractJctSession implements JctSession {
+public abstract class AbstractConsoleSession<O, R extends ConsoleRequest<R>> implements ConsoleSession<O, R> {
 
-    protected final JctConsole console;
+    protected final O owner;
+    protected final R request;
 
     private Thread executionThread;
     private boolean executed;
@@ -18,24 +22,33 @@ public abstract class AbstractJctSession implements JctSession {
     /**
      * Constructor.
      *
-     * @param console associated console
-     * @throws IllegalArgumentException if {@code console} is null
+     * @param owner session owner
+     * @param request associated request
+     * @throws IllegalArgumentException if either parameter is null
      */
-    protected AbstractJctSession(JctConsole console) {
-        if (console == null)
-            throw new IllegalArgumentException("null console");
-        this.console = console;
+    protected AbstractConsoleSession(O owner, R request) {
+        if (owner == null)
+            throw new IllegalArgumentException("null owner");
+        if (request == null)
+            throw new IllegalArgumentException("null request");
+        this.owner = owner;
+        this.request = request;
     }
 
-// JctSession
+// Session
 
     @Override
-    public JctConsole getConsole() {
-        return this.console;
+    public O getOwner() {
+        return this.owner;
     }
 
     @Override
-    public boolean execute() throws InterruptedException {
+    public R getRequest() {
+        return this.request;
+    }
+
+    @Override
+    public int execute() throws InterruptedException {
         synchronized (this) {
             if (this.executed)
                 throw new IllegalStateException("already executed");
@@ -53,7 +66,7 @@ public abstract class AbstractJctSession implements JctSession {
 
     @Override
     public synchronized boolean interrupt() {
-        return this.executed && this.executionThread != null && this.doInterrupt(this.executionThread);
+        return this.executionThread != null && this.doInterrupt(this.executionThread);
     }
 
 // Subclass Methods
@@ -64,10 +77,10 @@ public abstract class AbstractJctSession implements JctSession {
      * <p>
      * This method is invoked by {@link #execute} to do the actual work.
      *
-     * @return true if successful, false if an error occurred
+     * @return zero if successful, non-zero error code if an error occurred
      * @throws InterruptedException if the current thread is interrupted
      */
-    protected abstract boolean doExecute() throws InterruptedException;
+    protected abstract int doExecute() throws InterruptedException;
 
     /**
      * Interrupt execution.
@@ -77,7 +90,7 @@ public abstract class AbstractJctSession implements JctSession {
      * but only if {@link #execute} is still executing.
      *
      * <p>
-     * The implementation in {@link AbstractJctSession} just invokes {@link Thread#interrupt} on the given thread.
+     * The implementation in {@link AbstractConsoleSession} just invokes {@link Thread#interrupt} on the given thread.
      *
      * <p>
      * NOTE: When this method is invoked, the current instance will be locked.

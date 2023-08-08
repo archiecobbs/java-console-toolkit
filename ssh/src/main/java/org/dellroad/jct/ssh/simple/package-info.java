@@ -4,6 +4,6 @@
  */
 
 /**
- * A simple SSH server implementation exposing a {@link org.dellroad.jct.core.JctConsole}.
+ * A simple SSH server for the Java Console Toolkit.
  */
 package org.dellroad.jct.ssh.simple;

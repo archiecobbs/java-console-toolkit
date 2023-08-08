@@ -7,10 +7,10 @@ package org.dellroad.jct.core.simple;
 
 import java.util.List;
 
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
 
 /**
- * A {@link SimpleConsole} command.
+ * Implemented by commands that can be configured for a {@link SimpleExec} or {@link SimpleShell}.
  */
 public interface SimpleCommand {
 
@@ -52,8 +52,8 @@ public interface SimpleCommand {
      * @param session associated session
      * @param name the name under which this command was invoked
      * @param args zero or more command arguments (does not include command name)
-     * @return true for success, false for failure
+     * @return zero if successful, non-zero error code if an error occurred
      * @throws InterruptedException if execution is interrupted
      */
-    boolean execute(JctSession session, String name, List<String> args) throws InterruptedException;
+    int execute(ConsoleSession<?, ?> session, String name, List<String> args) throws InterruptedException;
 }

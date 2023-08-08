@@ -9,13 +9,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.dellroad.jct.core.JctShellSession;
-import org.dellroad.jct.core.JctUtils;
-import org.dellroad.jct.core.simple.SimpleConsole;
+import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.Shell;
+import org.dellroad.jct.core.ShellRequest;
+import org.dellroad.jct.core.ShellSession;
+import org.dellroad.jct.core.simple.SimpleCommand;
+import org.dellroad.jct.core.simple.SimpleCommandSupport;
+import org.dellroad.jct.core.simple.SimpleExec;
+import org.dellroad.jct.core.simple.SimpleExecRequest;
+import org.dellroad.jct.core.simple.SimpleShell;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
+import org.dellroad.jct.core.simple.command.DateCommand;
+import org.dellroad.jct.core.simple.command.EchoCommand;
+import org.dellroad.jct.core.simple.command.ExitCommand;
+import org.dellroad.jct.core.simple.command.HelpCommand;
+import org.dellroad.jct.core.simple.command.SleepCommand;
+import org.dellroad.jct.core.simple.command.SubshellCommand;
+import org.dellroad.jct.core.util.ConsoleUtil;
+import org.dellroad.jct.jshell.JShellToolShellSession;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -24,6 +43,32 @@ import org.jline.terminal.TerminalBuilder;
  * Demonstration of various Java Console Toolkit components.
  */
 public class DemoMain {
+
+    private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
+
+    public DemoMain() {
+        commandMap.put("date", new DateCommand());
+        commandMap.put("echo", new EchoCommand());
+        commandMap.put("exit", new ExitCommand());
+        commandMap.put("help", new HelpCommand());
+        if (this.getJavaVersion() >= 9)
+            commandMap.put("jshell", new JShellCommand());
+        commandMap.put("quit", new ExitCommand());
+        commandMap.put("sleep", new SleepCommand());
+    }
+
+    public int getJavaVersion() {
+        final String vers = System.getProperty("java.version");
+        final Matcher matcher = Pattern.compile("1\\.([0-9]+).*|(9|[1-9][0-9]+)\\..*").matcher(vers);
+        try {
+            if (!matcher.matches())
+                throw new NumberFormatException();
+            final String vnum = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+            return Integer.parseInt(vnum, 10);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("can't determine JDK version from \"" + vers + "\"");
+        }
+    }
 
     public String getName() {
         return "jct-demo";
@@ -86,64 +131,97 @@ public class DemoMain {
                 return 1;
             }
         }
-        switch (params.size()) {
-        case 0:
-            break;
-        default:
-            this.usage(System.err);
-            return 1;
-        }
 
-        // Create console
-        final SimpleConsole demoConsole = new SimpleConsole();
+        // Interactive shell or execute command directly?
+        final ConsoleSession<?, ?> session;
+        if (!params.isEmpty()) {
 
-        // Start SSH server
-        if (ssh) {
-            SimpleConsoleSshServer server = SimpleConsoleSshServer.builder()
-              .console(demoConsole)
-              .hostKey(sshHostKeyFile.toPath())
-              .authorizedKeys(sshAuthKeysFile.toPath())
-              .listenPort(sshListenPort)
-              .loopbackOnly(true)
-              .build();
-            try {
-                server.start();
-            } catch (IOException e) {
-                System.err.println(String.format("%s: error starting SSH server", this.getName()));
-                e.printStackTrace(System.err);
+            // Sanity check
+            if (ssh) {
+                System.err.println(String.format(
+                  "%s: SSH server is not compatible with direct command execution", "Error", params.getFirst()));
                 return 1;
             }
-            System.err.println(String.format("%s: started SSH server on port %d", this.getName(), sshListenPort));
+
+            // Create exec
+            final SimpleExec exec = new SimpleExec();
+            exec.setCommandRegistry(() -> this.commandMap);
+
+            // Create request
+            final SimpleExecRequest request = new SimpleExecRequest(System.in,
+              System.out, System.err, System.getenv(), new ArrayList<>(params));
+
+            // Find command
+            final SimpleCommandSupport.FoundCommand foundCommand = exec.findCommand(System.err, request);
+            if (foundCommand == null)
+                return 1;
+
+            // Create exec session
+            try {
+                session = exec.newExecSession(request, foundCommand);
+            } catch (IOException e) {
+                System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "exec", e));
+                return 1;
+            }
+        } else {
+
+            // Create and configure console components
+            final SimpleExec exec = new SimpleExec();
+            final SimpleShell shell = new SimpleShell();
+            exec.setCommandRegistry(() -> this.commandMap);
+            shell.setCommandRegistry(() -> this.commandMap);
+
+            // Start SSH server
+            if (ssh) {
+                SimpleConsoleSshServer server = SimpleConsoleSshServer.builder()
+                  .exec(exec)
+                  .shell(shell)
+                  .hostKey(sshHostKeyFile.toPath())
+                  .authorizedKeys(sshAuthKeysFile.toPath())
+                  .listenPort(sshListenPort)
+                  .loopbackOnly(true)
+                  .build();
+                try {
+                    server.start();
+                } catch (IOException e) {
+                    System.err.println(String.format("%s: error starting SSH server", this.getName()));
+                    e.printStackTrace(System.err);
+                    return 1;
+                }
+                System.err.println(String.format("%s: started SSH server on port %d", this.getName(), sshListenPort));
+            }
+
+            // Create system terminal
+            final AtomicReference<ShellSession> shellSessionRef = new AtomicReference<>();
+            final Terminal terminal;
+            try {
+                terminal = TerminalBuilder.builder()
+                  .name("JCT")
+                  .system(true)
+                  .nativeSignals(true)
+                  .signalHandler(ConsoleUtil.interrruptHandler(shellSessionRef::get, Terminal.SignalHandler.SIG_DFL))
+                  .build();
+            } catch (IOException e) {
+                System.err.println(String.format("%s: error creating system terminal: %s", this.getName(), e));
+                return 1;
+            }
+
+            // Create shell session
+            final ShellSession shellSession;
+            try {
+                shellSession = shell.newShellSession(
+                  new SimpleShellRequest(terminal, Collections.emptyList(), System.getenv()));
+            } catch (IOException e) {
+                System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "shell", e));
+                return 1;
+            }
+            shellSessionRef.set(shellSession);
+            session = shellSession;
         }
 
-        // Create system terminal
-        final AtomicReference<JctShellSession> shellSessionRef = new AtomicReference<>();
-        final Terminal terminal;
+        // Execute session
         try {
-            terminal = TerminalBuilder.builder()
-              .name("JCT")
-              .system(true)
-              .nativeSignals(true)
-              .signalHandler(JctUtils.interrruptHandler(shellSessionRef::get, Terminal.SignalHandler.SIG_DFL))
-              .build();
-        } catch (IOException e) {
-            System.err.println(String.format("%s: error creating system terminal: %s", this.getName(), e));
-            return 1;
-        }
-
-        // Create system console
-        final JctShellSession shellSession;
-        try {
-            shellSession = demoConsole.newShellSession(new SimpleShellRequest(terminal, System.getenv()));
-        } catch (IOException e) {
-            System.err.println(String.format("%s: error creating shell session: %s", this.getName(), e));
-            return 1;
-        }
-        shellSessionRef.set(shellSession);
-
-        // Execute system console
-        try {
-            return shellSession.execute() ? 0 : 1;
+            return session.execute();
         } catch (InterruptedException e) {
             System.err.println(String.format("%s: interrupted", this.getName()));
             return 1;
@@ -152,7 +230,7 @@ public class DemoMain {
 
     public void usage(PrintStream out) {
         out.println(String.format("Usage:"));
-        out.println(String.format("    %s [options]", this.getName()));
+        out.println(String.format("    %s [options] [command ...]", this.getName()));
         out.println(String.format("Options:"));
         out.println(String.format(
           "    --ssh                        Enable SSH server"));
@@ -164,6 +242,9 @@ public class DemoMain {
           "    --ssh-listen-port port       Specify SSH server TCP port (default %d)", this.getDefaultListenPort()));
         out.println(String.format(
           "    --help                       Display this usage message"));
+        out.println(String.format("Commands:"));
+        this.commandMap.forEach((name, command) ->
+          out.println(String.format("    %-28s %s", name, command.getHelpSummary(name))));
     }
 
     public File getDefaultAuthKeysFile() {
@@ -193,5 +274,27 @@ public class DemoMain {
             exitValue = 1;
         }
         System.exit(exitValue);
+    }
+
+// JShellCommand
+
+    private static class JShellCommand extends SubshellCommand {
+
+        JShellCommand() {
+            super(new JShellShell(),
+              "[options]",
+              "Start up a JShell console.",
+              "Creates a new JShell console and enters into it. Only works in shell mode, not execute mode.");
+        }
+    }
+
+// JShellShell
+
+    private static class JShellShell implements Shell {
+
+        @Override
+        public ShellSession newShellSession(ShellRequest request) {
+            return new JShellToolShellSession(this, request);
+        }
     }
 }

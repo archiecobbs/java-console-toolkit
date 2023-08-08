@@ -5,34 +5,39 @@
 
 package org.dellroad.jct.core.simple;
 
+import java.util.List;
 import java.util.Map;
 
+import org.dellroad.jct.core.AbstractConsoleRequest;
 import org.dellroad.jct.core.ShellRequest;
 import org.jline.terminal.Terminal;
 
 /**
  * Straightforward implementation of the {@link ShellRequest} interface.
  */
-public class SimpleShellRequest extends AbstractRequest implements ShellRequest {
+public class SimpleShellRequest extends AbstractConsoleRequest<ShellRequest> implements ShellRequest {
 
     private final Terminal terminal;
+    private final List<String> args;
+
+// Constructor
 
     /**
      * Constructor.
      *
      * @param terminal associated interactive terminal
+     * @param args shell arguments
      * @param env environment variables, or null for an empty map
-     * @throws IllegalArgumentException if {@code terminal} is null
+     * @throws IllegalArgumentException if {@code terminal} or {@code args} is null
      */
-    public SimpleShellRequest(Terminal terminal, Map<String, String> env) {
+    public SimpleShellRequest(Terminal terminal, List<String> args, Map<String, String> env) {
         super(env);
-
-        // Validate
         if (terminal == null)
             throw new IllegalArgumentException("null terminal");
-
-        // Initialize
+        if (args == null)
+            throw new IllegalArgumentException("null args");
         this.terminal = terminal;
+        this.args = args;
     }
 
 // ShellRequest
@@ -40,5 +45,10 @@ public class SimpleShellRequest extends AbstractRequest implements ShellRequest 
     @Override
     public Terminal getTerminal() {
         return this.terminal;
+    }
+
+    @Override
+    public List<String> getShellArguments() {
+        return this.args;
     }
 }

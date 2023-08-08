@@ -9,53 +9,68 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 /**
- * A session associated with a {@link JctConsole}.
+ * A session associated with a console component.
  *
  * <p>
- * A {@link JctSession} is not reusable.
+ * {@link ConsoleSession}s are created by console components from {@link ConsoleRequest}s and then {@linkplain #execute executed}
+ * synchronously. During execution, {@link #interrupt} may be invoked (by another thread) to signal that the execution
+ * should be interrupted.
+ *
+ * <p>
+ * {@link ConsoleSession}s are not reusable.
+ *
+ * @param <O> associated owner type
+ * @param <R> associated request type
  */
-public interface JctSession {
+public interface ConsoleSession<O, R extends ConsoleRequest<R>> {
 
     /**
-     * Get the console with which this session is associated.
+     * Get the owner, i.e., the console component that created this session.
      *
-     * @return associated console
+     * @return owning component
      */
-    JctConsole getConsole();
+    O getOwner();
 
     /**
-     * Get the source for standard input.
+     * Get the request from which this session was created.
      *
-     * @return standard input stream
+     * @return original request
+     */
+    R getRequest();
+
+    /**
+     * Get this session's input stream.
+     *
+     * @return session input
      */
     InputStream getInputStream();
 
     /**
-     * Get the destination for standard output.
+     * Get this session's output stream.
      *
-     * @return standard output stream
+     * @return session output
      */
     PrintStream getOutputStream();
 
     /**
-     * Get the destination for standard error.
+     * Get this session's error output stream.
      *
-     * @return standard error stream
+     * @return session error output
      */
     PrintStream getErrorStream();
 
     /**
-     * Execute this session in the current thread.
+     * Execute this session synchronously in the current thread.
      *
      * <p>
      * Instances should ensure any associated resources are cleaned up when this method
      * returns, whether normally or via thrown exception.
      *
-     * @return true if successful, false if an error occurred
+     * @return zero if successful, non-zero error code if an error occurred
      * @throws InterruptedException if execution is interrupted via {@link #interrupt}
      * @throws IllegalStateException if this method has already been invoked
      */
-    boolean execute() throws InterruptedException;
+    int execute() throws InterruptedException;
 
     /**
      * Interrupt the execution of this session.

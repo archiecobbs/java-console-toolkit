@@ -3,14 +3,15 @@
  * Copyright (C) 2023 Archie L. Cobbs. All rights reserved.
  */
 
-package org.dellroad.jct.core.simple;
+package org.dellroad.jct.core.simple.command;
 
 import java.util.List;
 
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.simple.AbstractSimpleCommand;
 
 /**
- * A simple "echo" command that can be used with a {@link SimpleConsole}.
+ * A simple "echo" command.
  */
 public class EchoCommand extends AbstractSimpleCommand {
 
@@ -19,7 +20,7 @@ public class EchoCommand extends AbstractSimpleCommand {
     }
 
     @Override
-    public boolean execute(JctSession session, String name, List<String> args) throws InterruptedException {
+    public int execute(ConsoleSession<?, ?> session, String name, List<String> args) throws InterruptedException {
         boolean first = true;
         for (String arg : args) {
             if (first)
@@ -29,6 +30,6 @@ public class EchoCommand extends AbstractSimpleCommand {
             session.getOutputStream().print(arg);
         }
         session.getOutputStream().println();
-        return true;
+        return 0;
     }
 }

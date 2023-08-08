@@ -3,7 +3,7 @@
  * Copyright (C) 2023 Archie L. Cobbs. All rights reserved.
  */
 
-package org.dellroad.jct.core;
+package org.dellroad.jct.core.util;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

@@ -4,6 +4,6 @@
  */
 
 /**
- * Classes for connecting a {@link org.dellroad.jct.core.JctConsole} to an SSH server.
+ * Classes for connecting an SSH server to the Java Console Toolkit.
  */
 package org.dellroad.jct.ssh;

@@ -11,17 +11,17 @@ import java.io.PrintStream;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
-import org.dellroad.jct.core.CrNlPrintStream;
-import org.dellroad.jct.core.JctConsole;
-import org.dellroad.jct.core.JctExecSession;
+import org.dellroad.jct.core.Exec;
+import org.dellroad.jct.core.ExecSession;
 import org.dellroad.jct.core.simple.SimpleExecRequest;
+import org.dellroad.jct.core.util.CrNlPrintStream;
 
-public class JctExecCommand extends AbstractCommand<JctExecSession> {
+public class JctExecCommand extends AbstractCommand<Exec, ExecSession> {
 
     private final String command;
 
-    public JctExecCommand(JctConsole console, ChannelSession channel, String command) {
-        super(console, channel);
+    public JctExecCommand(Exec exec, ChannelSession channel, String command) {
+        super(exec, channel);
         if (command == null)
             throw new IllegalArgumentException("null command");
         this.command = command;
@@ -30,14 +30,14 @@ public class JctExecCommand extends AbstractCommand<JctExecSession> {
 // AbstractCommand
 
     @Override
-    protected JctExecSession createSession() throws IOException {
+    protected ExecSession createSession() throws IOException {
 
         // Create printable output streams using the SSH client's character encoding
         final PrintStream pout = CrNlPrintStream.of(this.out, this.charset);
         final PrintStream perr = CrNlPrintStream.of(this.err, this.charset);
 
         // Execute command
-        return this.console.newExecSession(new SimpleExecRequest(this.in, pout, perr, this.env.getEnv(), this.command));
+        return this.factory.newExecSession(new SimpleExecRequest(this.in, pout, perr, this.env.getEnv(), this.command));
     }
 
     @Override

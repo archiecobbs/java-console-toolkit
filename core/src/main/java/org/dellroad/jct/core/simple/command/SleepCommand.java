@@ -3,14 +3,15 @@
  * Copyright (C) 2023 Archie L. Cobbs. All rights reserved.
  */
 
-package org.dellroad.jct.core.simple;
+package org.dellroad.jct.core.simple.command;
 
 import java.util.List;
 
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.simple.AbstractSimpleCommand;
 
 /**
- * A simple "sleep" command that can be used with a {@link SimpleConsole}.
+ * A simple "sleep" command.
  */
 public class SleepCommand extends AbstractSimpleCommand {
 
@@ -19,7 +20,7 @@ public class SleepCommand extends AbstractSimpleCommand {
     }
 
     @Override
-    public boolean execute(JctSession session, String name, List<String> args) throws InterruptedException {
+    public int execute(ConsoleSession<?, ?> session, String name, List<String> args) throws InterruptedException {
 
         // Get seconds
         final long millis;
@@ -30,16 +31,16 @@ public class SleepCommand extends AbstractSimpleCommand {
                 millis = (long)(Double.parseDouble(secs) * 1000.0);
             } catch (NumberFormatException e) {
                 session.getErrorStream().println(String.format("Error: invalid seconds \"%s\"", secs));
-                return false;
+                return 1;
             }
             break;
         default:
             this.printUsage(session, name);
-            return false;
+            return 1;
         }
 
         // Sleep
         Thread.sleep(millis);
-        return true;
+        return 0;
     }
 }

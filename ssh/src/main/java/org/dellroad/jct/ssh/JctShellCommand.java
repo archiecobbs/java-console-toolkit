@@ -6,32 +6,33 @@
 package org.dellroad.jct.ssh;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
-import org.dellroad.jct.core.JctConsole;
-import org.dellroad.jct.core.JctShellSession;
-import org.dellroad.jct.core.JctUtils;
+import org.dellroad.jct.core.Shell;
+import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
+import org.dellroad.jct.core.util.ConsoleUtil;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-public class JctShellCommand extends AbstractCommand<JctShellSession> {
+public class JctShellCommand extends AbstractCommand<Shell, ShellSession> {
 
     private volatile Terminal terminal;
-    private volatile JctShellSession session;
+    private volatile ShellSession session;
 
-    public JctShellCommand(JctConsole console, ChannelSession channel) {
-        super(console, channel);
+    public JctShellCommand(Shell shell, ChannelSession channel) {
+        super(shell, channel);
     }
 
 // AbstractCommand
 
     @Override
-    protected JctShellSession createSession() throws IOException {
+    protected ShellSession createSession() throws IOException {
 
         // Sanity check
         if (this.terminal != null || this.session != null)
@@ -42,7 +43,7 @@ public class JctShellCommand extends AbstractCommand<JctShellSession> {
           .name("ssh")
           .system(false)
           .encoding(this.charset)
-          .signalHandler(JctUtils.interrruptHandler(() -> this.session, Terminal.SignalHandler.SIG_DFL))
+          .signalHandler(ConsoleUtil.interrruptHandler(() -> this.session, Terminal.SignalHandler.SIG_DFL))
           .streams(this.in, this.out);
         final String term = this.env.getEnv().get(Environment.ENV_TERM);
         if (term != null)
@@ -54,9 +55,11 @@ public class JctShellCommand extends AbstractCommand<JctShellSession> {
         SshUtil.updateAttributesFromEnvironment(attrs, this.env);
         this.terminal.setAttributes(attrs);
         SshUtil.updateSize(this.terminal, this.env);
+        this.terminal.echo(false);
 
         // Create shell session
-        this.session = this.console.newShellSession(new SimpleShellRequest(this.terminal, this.env.getEnv()));
+        final SimpleShellRequest request = new SimpleShellRequest(this.terminal, Collections.emptyList(), this.env.getEnv());
+        this.session = this.factory.newShellSession(request);
 
         // Return shell session
         return this.session;

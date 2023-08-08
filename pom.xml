@@ -51,6 +51,7 @@
         <jct.package.root>org.dellroad.jct</jct.package.root>
         <checkstyle.config.location>src/checkstyle/checkstyle.xml</checkstyle.config.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <target.java.version>8</target.java.version>
 
         <!-- Dependency versions - Libraries -->
         <dellroad.stuff.version>2.5.9</dellroad.stuff.version>
@@ -255,7 +256,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <release>8</release>
+                    <release>${target.java.version}</release>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Xlint:all,-path</arg>

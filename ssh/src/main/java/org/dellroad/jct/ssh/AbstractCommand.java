@@ -21,16 +21,15 @@ import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.Signal;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
-import org.dellroad.jct.core.CrNlPrintStream;
-import org.dellroad.jct.core.JctConsole;
-import org.dellroad.jct.core.JctSession;
+import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.util.CrNlPrintStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractCommand<S extends JctSession> implements Command {
+abstract class AbstractCommand<F, S extends ConsoleSession<?, ?>> implements Command {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    protected final JctConsole console;
+    protected final F factory;
     protected final ChannelSession channel;
 
     protected InputStream in;
@@ -45,12 +44,12 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
 
 // Constructors
 
-    protected AbstractCommand(JctConsole console, ChannelSession channel) {
-        if (console == null)
-            throw new IllegalArgumentException("null console");
+    protected AbstractCommand(F factory, ChannelSession channel) {
+        if (factory == null)
+            throw new IllegalArgumentException("null factory");
         if (channel == null)
             throw new IllegalArgumentException("null channel");
-        this.console = console;
+        this.factory = factory;
         this.channel = channel;
     }
 
@@ -134,7 +133,7 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
     }
 
     protected int executeSession() throws InterruptedException {
-        return this.session.execute() ? 0 : 1;
+        return this.session.execute();
     }
 
     protected Thread createSessionThread(Runnable action) {
@@ -165,7 +164,7 @@ abstract class AbstractCommand<S extends JctSession> implements Command {
 // Subclass Hooks
 
     /**
-     * Create a {@link JctSession} that will implement this command.
+     * Create a {@link ConsoleSession} that will implement this command.
      *
      * @return newly created session
      * @throws IOException if an I/O error occurs

@@ -4,6 +4,6 @@
  */
 
 /**
- * {@link org.dellroad.jct.core.JctConsole} plug-in for JShell.
+ * {@link org.dellroad.jct.core.Shell} wrappers for JShell.
  */
 package org.dellroad.jct.jshell;

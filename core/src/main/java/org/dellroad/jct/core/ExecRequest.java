@@ -7,48 +7,53 @@ package org.dellroad.jct.core;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Map;
+import java.util.List;
 
 /**
- * Represents a request to directly (i.e., non-interactively) execute a command.
+ * Represents a request to create a new {@link ExecSession} to execute a command.
+ *
+ * <p>
+ * The command is specified in one of two ways: as a single string (via {@link #getCommandString}) or as an array of strings
+ * (via {@link #getCommandList}). In the former case, this instance is responsible for whatever parsing is needed; the
+ * "command" could actually be more like a script, e.g., {@code "echo foo; echo bar;"}.
  */
-public interface ExecRequest {
+public interface ExecRequest extends ConsoleRequest<ExecRequest> {
 
     /**
-     * Get the command's input stream.
+     * Get this request's input stream.
      *
      * @return command input
      */
     InputStream getInputStream();
 
     /**
-     * Get the command's output stream.
+     * Get this request's normal output stream.
      *
      * @return command output
      */
     PrintStream getOutputStream();
 
     /**
-     * Get the command's error output stream.
+     * Get this request's error output stream.
      *
      * @return command error output
      */
     PrintStream getErrorStream();
 
     /**
-     * Get the command's environment variables.
-     *
-     * @return environment variables
-     */
-    Map<String, String> getEnvironment();
-
-    /**
-     * Get the requested command.
+     * Get this request's command to execute as a single string.
      *
      * <p>
-     * Typically the returned string must be parsed somehow; see {@link JctConsole#newExecSession}.
+     * The command is given as a single string. Typically the string is parsed somehow into a distinguisble command.
      *
-     * @return the command to execute
+     * @return the command to execute, or null if {@link #getCommandList} returns a non-null array
      */
-    String getCommand();
+    String getCommandString();
+
+    /**
+     * Get this request's command to execute as a string array.
+     *
+     * @return the command to execute, or null if {@link #getCommandString} returns a non-null command string
+     */
+    List<String> getCommandList();
 }

@@ -19,14 +19,15 @@ import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
-import org.dellroad.jct.core.JctConsole;
+import org.dellroad.jct.core.Exec;
+import org.dellroad.jct.core.Shell;
 import org.dellroad.jct.ssh.JctExecFactory;
 import org.dellroad.jct.ssh.JctShellFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A simple SSH server exposing a {@link JctConsole}.
+ * A simple SSH server exposing a {@link Shell} and/or and {@link Exec}.
  *
  * <p>
  * The only supported authentication type is public key authentication.
@@ -40,7 +41,8 @@ public class SimpleConsoleSshServer implements Closeable {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected final JctConsole console;
+    protected final Exec exec;
+    protected final Shell shell;
     protected final int listenPort;
     protected final boolean loopbackOnly;
     protected final PublickeyAuthenticator authenticator;
@@ -54,13 +56,14 @@ public class SimpleConsoleSshServer implements Closeable {
      * @param builder configuration
      */
     protected SimpleConsoleSshServer(Builder builder) {
-        this.console = builder.console;
+        this.exec = builder.exec;
+        this.shell = builder.shell;
         this.listenPort = builder.listenPort;
         this.loopbackOnly = builder.loopbackOnly;
         this.authenticator = builder.authenticator;
         this.hostKeyProvider = builder.hostKeyProvider;
-        if (this.console == null)
-            throw new IllegalArgumentException("no console configured");
+        if (this.exec == null && this.shell == null)
+            throw new IllegalArgumentException("no exec or shell configured");
         if (this.authenticator == null)
             throw new IllegalArgumentException("no authenticator configured");
         if (this.hostKeyProvider == null)
@@ -111,8 +114,10 @@ public class SimpleConsoleSshServer implements Closeable {
             this.sshd.setKeyPairProvider(this.hostKeyProvider);
 
             // Connect to console
-            this.sshd.setShellFactory(new JctShellFactory(this.console));
-            this.sshd.setCommandFactory(new JctExecFactory(this.console));
+            if (this.shell != null)
+                this.sshd.setShellFactory(new JctShellFactory(this.shell));
+            if (this.exec != null)
+                this.sshd.setCommandFactory(new JctExecFactory(this.exec));
 
             // Start server
             this.sshd.start();
@@ -163,7 +168,8 @@ public class SimpleConsoleSshServer implements Closeable {
      */
     public static final class Builder {
 
-        private JctConsole console;
+        private Exec exec;
+        private Shell shell;
         private int listenPort = SshConstants.DEFAULT_PORT;
         private boolean loopbackOnly = true;
         private PublickeyAuthenticator authenticator;
@@ -173,16 +179,30 @@ public class SimpleConsoleSshServer implements Closeable {
         }
 
         /**
-         * Configure the {@link JctConsole} that successful incoming connections should connect to.
+         * Configure the {@link Exec} that successful incoming execute connections should connect to.
          *
          * <p>
-         * Required property.
+         * This property or {@code #shell shell()} is required.
          *
-         * @param console target console
+         * @param exec target exec
          * @return this instance
          */
-        public Builder console(JctConsole console) {
-            this.console = console;
+        public Builder exec(Exec exec) {
+            this.exec = exec;
+            return this;
+        }
+
+        /**
+         * Configure the {@link Shell} that successful incoming shell connections should connect to.
+         *
+         * <p>
+         * This property or {@code #shell shell()} is required.
+         *
+         * @param shell target shell
+         * @return this instance
+         */
+        public Builder shell(Shell shell) {
+            this.shell = shell;
             return this;
         }
 

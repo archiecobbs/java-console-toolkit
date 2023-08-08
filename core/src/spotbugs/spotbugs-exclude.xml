@@ -5,4 +5,9 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
+    <Match>
+        <Class name="org.dellroad.jct.core.util.ConsoleUtil$1"/>
+        <Method name="&lt;init&gt;"/>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+    </Match>
 </FindBugsFilter>
