@@ -1,3 +1,10 @@
+#
+# NOTE: This SSH private key is only used in the java-console-toolkit
+# demonstration package. It is the host key for the SSH server that you
+# start when you run the demo JAR with the "--ssh" flag.
+#
+# It is NOT in use anywhere on the Internet.
+#
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAYEA46I8wN5+wUrGgVgy6X/uRa1e9Af0E0tA+U8LNWWro1KtI5Kj2tLU
