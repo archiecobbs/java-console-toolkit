@@ -7,16 +7,27 @@ package org.dellroad.jct.jshell;
 
 import java.io.PrintStream;
 
+import jdk.jshell.execution.LocalExecutionControlProvider;
 import jdk.jshell.tool.JavaShellToolBuilder;
 
 import org.dellroad.jct.core.AbstractShellSession;
 import org.dellroad.jct.core.Shell;
 import org.dellroad.jct.core.ShellRequest;
+import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.util.ConsoleUtil;
 import org.jline.terminal.Terminal;
 
 /**
- * A {@link Shell} session that fires up the JShell tool using {@link JavaShellToolBuilder}.
+ * A {@link ShellSession} that executes a {@link jdk.jshell.JShell} instance.
+ *
+ * <p>
+ * The {@link jdk.jshell.JShell} instance is configured in two ways:
+ * <ul>
+ *  <li>Overriding {@link #createBuilder createBuilder()} allows customization of the {@link JavaShellToolBuilder}.
+ *  <li>The {@link ShellRequest#getShellArguments} flags are passed to {@link JavaShellToolBuilder#start}.
+ * </ul>
+ * For an example of the latter, including {@code "--execution=local"} configures a {@link LocalExecutionControlProvider},
+ * which makes it possible to access objects in the current JVM.
  */
 public class JShellToolShellSession extends AbstractShellSession {
 
@@ -46,16 +57,12 @@ public class JShellToolShellSession extends AbstractShellSession {
         final JavaShellToolBuilder builder = this.createBuilder(request);
 
         // Execute tool
-        final int exitValue;
         try {
-            exitValue = builder.start(this.request.getShellArguments().toArray(new String[0]));
+            return builder.start(this.request.getShellArguments().toArray(new String[0]));
         } catch (Exception e) {
             this.out.println(String.format("Error: %s", e));
             return 1;
         }
-
-        // Done
-        return exitValue;
     }
 
     /**
@@ -68,7 +75,7 @@ public class JShellToolShellSession extends AbstractShellSession {
         JavaShellToolBuilder builder = JavaShellToolBuilder.builder();
         builder.interactiveTerminal(true);
         builder.env(this.request.getEnvironment());
-        //builder.locale(this.request.getTerminal().getLocale());  TODO
+        //builder.locale(???);  TODO
         builder.in(this.in, this.in);
         builder.out(this.out);
         return builder;
