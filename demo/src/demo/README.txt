@@ -8,3 +8,4 @@ To see various command line options:
 
     $ java -jar java-console-toolkit-demo-1.0.0.jar --help
 
+More info: https://github.com/archiecobbs/java-console-toolkit

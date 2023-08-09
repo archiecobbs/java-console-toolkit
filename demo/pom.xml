@@ -20,7 +20,6 @@
         </site>
     </distributionManagement>
     <properties>
-        <target.java.version>11</target.java.version>
         <automatic.module.name>${jct.package.root}.demo</automatic.module.name>
     </properties>
     <dependencies>

@@ -18,8 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dellroad.jct.core.ConsoleSession;
-import org.dellroad.jct.core.Shell;
-import org.dellroad.jct.core.ShellRequest;
 import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.simple.SimpleCommand;
 import org.dellroad.jct.core.simple.SimpleCommandSupport;
@@ -32,9 +30,8 @@ import org.dellroad.jct.core.simple.command.EchoCommand;
 import org.dellroad.jct.core.simple.command.ExitCommand;
 import org.dellroad.jct.core.simple.command.HelpCommand;
 import org.dellroad.jct.core.simple.command.SleepCommand;
-import org.dellroad.jct.core.simple.command.SubshellCommand;
 import org.dellroad.jct.core.util.ConsoleUtil;
-import org.dellroad.jct.jshell.JShellToolShellSession;
+import org.dellroad.jct.jshell.JShellCommand;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -52,7 +49,7 @@ public class DemoMain {
         commandMap.put("exit", new ExitCommand());
         commandMap.put("help", new HelpCommand());
         if (this.getJavaVersion() >= 9)
-            commandMap.put("jshell", new JShellCommand());
+            commandMap.put("jshell", new JShellCommandCreator().create());
         commandMap.put("quit", new ExitCommand());
         commandMap.put("sleep", new SleepCommand());
     }
@@ -276,25 +273,12 @@ public class DemoMain {
         System.exit(exitValue);
     }
 
-// JShellCommand
+// JShellCommandCreator
 
-    private static class JShellCommand extends SubshellCommand {
-
-        JShellCommand() {
-            super(new JShellShell(),
-              "[options]",
-              "Start up a JShell console.",
-              "Creates a new JShell console and enters into it. Only works in shell mode, not execute mode.");
-        }
-    }
-
-// JShellShell
-
-    private static class JShellShell implements Shell {
-
-        @Override
-        public ShellSession newShellSession(ShellRequest request) {
-            return new JShellToolShellSession(this, request);
+    // This separate class avoids a resolution error on JDK versions < 9
+    private static final class JShellCommandCreator {
+        JShellCommand create() {
+            return new JShellCommand();
         }
     }
 }

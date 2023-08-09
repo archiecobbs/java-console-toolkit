@@ -16,7 +16,10 @@ import org.dellroad.jct.core.simple.AbstractSimpleCommand;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
 
 /**
- * A command that fires up a subshell within an outer shell.
+ * A command that fires up subshell sessions.
+ *
+ * <p>
+ * This command only works within shell sessions.
  */
 public class SubshellCommand extends AbstractSimpleCommand {
 
@@ -25,7 +28,7 @@ public class SubshellCommand extends AbstractSimpleCommand {
     /**
      * Constructor.
      *
-     * @param shell underlying subshell
+     * @param shell the subshell, which creates the underlying subshell sessions
      * @param usage usage string, or null if command takes no arguments
      * @param summary help summary
      * @param detail help detail
