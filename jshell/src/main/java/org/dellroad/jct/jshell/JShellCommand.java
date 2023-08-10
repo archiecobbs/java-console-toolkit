@@ -11,7 +11,7 @@ import org.dellroad.jct.core.simple.command.SubshellCommand;
  * A command that fires up a {@link jdk.jshell.JShell} instance.
  *
  * <p>
- * See {@link JShellShell} for details.
+ * See {@link JShellShellSession} for details.
  */
 public class JShellCommand extends SubshellCommand {
 
