@@ -22,11 +22,38 @@ What are some issues that may come up?
 
 This project seeks to clarify these questions and allow you to answer YES.
 
+### Status
+
 This project is a work in progress.
+
+**Features implemented so far:**
+* Command and shell abstractions
+* Direct command execution from command line
+* Basic command line parser with quoting
+* Basic command shell with read-eval-print loop (REPL)
+* Terminal line editing support via Jline3
+* SSH server integration
+  * Public key authentication (required)
+  * SSH remote command execution
+  * SSH remote shell execution
+* JShell integration
+  * Direct execution as primary shell
+  * Subshell execution via separate command
+
+**Possible future features:**
+* Glue for Spring Shell
+* Glue for PicoCLI
+* Commands via arbitrary forked `java.lang.Process`
+* More elaborate command line features
+  * Persistent history
+  * Colors
+  * Etc.
+* Batch script support
+* Your well designed contributions
 
 ### JCT Concepts
 
-Let's nail down some concepts.
+Let's nail down some concepts used by this library.
 
 An **I/O stream** is a simple byte-oriented conduit, that is, an `InputStream` or an `OutputStream`. Actually we want `PrintStream` instead of `OutputStream` because we're going to assume that there is some known character encoding.
 
@@ -45,6 +72,23 @@ A **shell** is software that allows a **terminal** to be used interactively to e
 A **subshell** is a shell that is started by executing a command in another, outer shell. Upon exit from the subshell, the outer shell continues as before.
 
 A **batch script** is a text file containing multiple commands intended to be executed non-interactively. The syntax for the file typically closely mirrors the syntax of some shell's interactive input, but no shell is required to execute a batch script. Instead, batch scripts are typically handled by executing a command that takes the script filename as a parameter or reads the script from standard input.
+
+These concepts are realized via the following Java classes:
+
+* [`Exec`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/Exec.html) - A thing that executes commands
+* [`Shell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/Shell.html) - A thing that implements shell functionality
+* [`SimpleCommand`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleCommand.html) - A simple command abstraction
+* [`CommandRegistry`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/CommandRegistry.html) - A registry of commands
+* [`SimpleExec`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleExec.html) - An `Exec` that executes commands out of a `CommandRegistry`
+* [`SimpleShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleShell.html) - A `Shell` that exposes the commands in a `CommandRegistry`
+* [`CommandLineParser`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/CommandLineParser.html) - Used by `SimpleShell` to parse command lines
+
+Additional "glue":
+
+* [`SimpleConsoleSshServer`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/ssh/simple/SimpleConsoleSshServer.html) - SSH server configured with an `Exec` and/or `Shell`
+* [`JShellShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/JShellShell.html) - A `Shell` wrapper around JShell.
+
+Note: `JShell` support is only available on JDK 9 or later.
 
 ### Demonstration
 
@@ -98,8 +142,6 @@ jct> exit 123
 $ echo $?
 123
 ```
-
-Note: the `jshell` command only appears if on JDK 9 or later.
 
 ### API Docs
 
