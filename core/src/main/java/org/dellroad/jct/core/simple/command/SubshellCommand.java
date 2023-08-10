@@ -66,7 +66,24 @@ public class SubshellCommand extends AbstractSimpleCommand {
         }
 
         // Execute subshell
-        return subSession.execute();
+        return this.executeSubshell(subSession);
+    }
+
+    /**
+     * Execute the subshell session.
+     *
+     * <p>
+     * The implementation in {@link SubshellCommand} simply invokes {@link ShellSession#execute}.
+     *
+     * @param session subshell session
+     * @return subshell exit value
+     * @throws InterruptedException if execution is interrupted via {@link ShellSession#interrupt}
+     * @throws IllegalArgumentException if {@code session} is null
+     */
+    protected int executeSubshell(ShellSession session) throws InterruptedException {
+        if (session == null)
+            throw new IllegalArgumentException("null session");
+        return session.execute();
     }
 
     /**
