@@ -94,7 +94,9 @@ foo  bar
 next line
 jct> sleep 9999
 ^C
-jct> exit
+jct> exit 123
+$ echo $?
+123
 ```
 
 Note: the `jshell` command only appears if on JDK 9 or later.
