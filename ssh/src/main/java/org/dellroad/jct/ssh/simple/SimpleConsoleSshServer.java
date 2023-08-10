@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 
 import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.config.keys.AuthorizedKeyEntry;
+import org.apache.sshd.common.keyprovider.ClassLoadableResourceKeyPairProvider;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.server.SshServer;
@@ -325,6 +326,23 @@ public class SimpleConsoleSshServer implements Closeable {
             if (hostKey == null)
                 throw new IllegalArgumentException("null hostKey");
             this.hostKeyProvider = new FileKeyPairProvider(hostKey);
+            return this;
+        }
+
+        /**
+         * Configure the host key to be read from a classpath resource at connection time.
+         *
+         * @param loader class loader
+         * @param resource classpath resource
+         * @return this instance
+         * @throws IllegalArgumentException if either parameter is null
+         */
+        public Builder hostKey(ClassLoader loader, String resource) {
+            if (loader == null)
+                throw new IllegalArgumentException("null loader");
+            if (resource == null)
+                throw new IllegalArgumentException("null resource");
+            this.hostKeyProvider = new ClassLoadableResourceKeyPairProvider(loader, resource);
             return this;
         }
 
