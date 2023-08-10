@@ -140,10 +140,17 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="../SimpleCommand.html" title="interface in org.dellroad.jct.core.simple">SimpleCommand</a></code></dd>
 </dl>
+<dl>
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="../../../jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell">JShellCommand</a></code></dd>
+</dl>
 <hr>
 <pre>public class <span class="typeNameLabel">SubshellCommand</span>
 extends <a href="../AbstractSimpleCommand.html" title="class in org.dellroad.jct.core.simple">AbstractSimpleCommand</a></pre>
-<div class="block">A command that fires up a subshell within an outer shell.</div>
+<div class="block">A command that fires up subshell sessions.
+
+ <p>
+ This command only works within shell sessions.</div>
 </li>
 </ul>
 </div>
@@ -301,7 +308,7 @@ extends <a href="../AbstractSimpleCommand.html" title="class in org.dellroad.jct
 <div class="block">Constructor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>shell</code> - underlying subshell</dd>
+<dd><code>shell</code> - the subshell, which creates the underlying subshell sessions</dd>
 <dd><code>usage</code> - usage string, or null if command takes no arguments</dd>
 <dd><code>summary</code> - help summary</dd>
 <dd><code>detail</code> - help detail</dd>

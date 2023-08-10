@@ -180,7 +180,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Get the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintStream.html?is-external=true" title="class or interface in java.io" class="externalLink"><code>PrintStream</code></a> to use for output from the given <code>Terminal</code>.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellToolShellSession.html#buildOutputStream(org.jline.terminal.Terminal)">buildOutputStream(Terminal)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellToolShellSession.html" title="class in org.dellroad.jct.jshell">JShellToolShellSession</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShellSession.html#buildOutputStream(org.jline.terminal.Terminal)">buildOutputStream(Terminal)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell">JShellShellSession</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/command/SubshellCommand.html#buildShellRequest(org.dellroad.jct.core.ShellSession,java.lang.String,java.util.List)">buildShellRequest(ShellSession, String, List&lt;String&gt;)</a></span> - Method in class org.dellroad.jct.core.simple.command.<a href="org/dellroad/jct/core/simple/command/SubshellCommand.html" title="class in org.dellroad.jct.core.simple.command">SubshellCommand</a></dt>
 <dd>
@@ -226,9 +226,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Utility routines.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellToolShellSession.html#createBuilder(org.dellroad.jct.core.ShellRequest)">createBuilder(ShellRequest)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellToolShellSession.html" title="class in org.dellroad.jct.jshell">JShellToolShellSession</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShellSession.html#createBuilder(org.dellroad.jct.core.ShellRequest)">createBuilder(ShellRequest)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell">JShellShellSession</a></dt>
 <dd>
-<div class="block">Create and configure the tool builder.</div>
+<div class="block">Create and configure the JShell builder.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/ssh/JctExecFactory.html#createCommand(org.apache.sshd.server.channel.ChannelSession,java.lang.String)">createCommand(ChannelSession, String)</a></span> - Method in class org.dellroad.jct.ssh.<a href="org/dellroad/jct/ssh/JctExecFactory.html" title="class in org.dellroad.jct.ssh">JctExecFactory</a></dt>
 <dd>&nbsp;</dd>
@@ -272,7 +272,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Execute this session.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellToolShellSession.html#doExecute()">doExecute()</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellToolShellSession.html" title="class in org.dellroad.jct.jshell">JShellToolShellSession</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShellSession.html#doExecute()">doExecute()</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell">JShellShellSession</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/AbstractConsoleSession.html#doInterrupt(java.lang.Thread)">doInterrupt(Thread)</a></span> - Method in class org.dellroad.jct.core.<a href="org/dellroad/jct/core/AbstractConsoleSession.html" title="class in org.dellroad.jct.core">AbstractConsoleSession</a></dt>
 <dd>
@@ -611,11 +611,33 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Constructor.</div>
 </dd>
-<dt><a href="org/dellroad/jct/jshell/JShellToolShellSession.html" title="class in org.dellroad.jct.jshell"><span class="typeNameLink">JShellToolShellSession</span></a> - Class in <a href="org/dellroad/jct/jshell/package-summary.html">org.dellroad.jct.jshell</a></dt>
+<dt><a href="org/dellroad/jct/jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell"><span class="typeNameLink">JShellCommand</span></a> - Class in <a href="org/dellroad/jct/jshell/package-summary.html">org.dellroad.jct.jshell</a></dt>
 <dd>
-<div class="block">A <a href="org/dellroad/jct/core/Shell.html" title="interface in org.dellroad.jct.core"><code>Shell</code></a> session that fires up the JShell tool using <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/tool/JavaShellToolBuilder.html?is-external=true" title="class or interface in jdk.jshell.tool" class="externalLink"><code>JavaShellToolBuilder</code></a>.</div>
+<div class="block">A command that fires up a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/JShell.html?is-external=true" title="class or interface in jdk.jshell" class="externalLink"><code>JShell</code></a> instance.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellToolShellSession.html#%3Cinit%3E(org.dellroad.jct.core.Shell,org.dellroad.jct.core.ShellRequest)">JShellToolShellSession(Shell, ShellRequest)</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellToolShellSession.html" title="class in org.dellroad.jct.jshell">JShellToolShellSession</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellCommand.html#%3Cinit%3E()">JShellCommand()</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell">JShellCommand</a></dt>
+<dd>
+<div class="block">Default constructor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellCommand.html#%3Cinit%3E(org.dellroad.jct.jshell.JShellShell)">JShellCommand(JShellShell)</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell">JShellCommand</a></dt>
+<dd>
+<div class="block">Constructor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellCommand.html#%3Cinit%3E(org.dellroad.jct.jshell.JShellShell,java.lang.String,java.lang.String)">JShellCommand(JShellShell, String, String)</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell">JShellCommand</a></dt>
+<dd>
+<div class="block">Primary constructor.</div>
+</dd>
+<dt><a href="org/dellroad/jct/jshell/JShellShell.html" title="class in org.dellroad.jct.jshell"><span class="typeNameLink">JShellShell</span></a> - Class in <a href="org/dellroad/jct/jshell/package-summary.html">org.dellroad.jct.jshell</a></dt>
+<dd>
+<div class="block">A <a href="org/dellroad/jct/core/Shell.html" title="interface in org.dellroad.jct.core"><code>Shell</code></a> wrapper around <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/JShell.html?is-external=true" title="class or interface in jdk.jshell" class="externalLink"><code>JShell</code></a>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShell.html#%3Cinit%3E()">JShellShell()</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShell.html" title="class in org.dellroad.jct.jshell">JShellShell</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell"><span class="typeNameLink">JShellShellSession</span></a> - Class in <a href="org/dellroad/jct/jshell/package-summary.html">org.dellroad.jct.jshell</a></dt>
+<dd>
+<div class="block">A <a href="org/dellroad/jct/core/ShellSession.html" title="interface in org.dellroad.jct.core"><code>ShellSession</code></a> that builds and executes a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/JShell.html?is-external=true" title="class or interface in jdk.jshell" class="externalLink"><code>JShell</code></a> instance.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShellSession.html#%3Cinit%3E(org.dellroad.jct.core.Shell,org.dellroad.jct.core.ShellRequest)">JShellShellSession(Shell, ShellRequest)</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell">JShellShellSession</a></dt>
 <dd>
 <div class="block">Constructor.</div>
 </dd>
@@ -676,6 +698,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">Create a new interactive shell session.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/SimpleShell.html#newShellSession(org.dellroad.jct.core.ShellRequest)">newShellSession(ShellRequest)</a></span> - Method in class org.dellroad.jct.core.simple.<a href="org/dellroad/jct/core/simple/SimpleShell.html" title="class in org.dellroad.jct.core.simple">SimpleShell</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShell.html#newShellSession(org.dellroad.jct.core.ShellRequest)">newShellSession(ShellRequest)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShell.html" title="class in org.dellroad.jct.jshell">JShellShell</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a id="I:O">
@@ -914,7 +938,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><a href="org/dellroad/jct/core/simple/command/SubshellCommand.html" title="class in org.dellroad.jct.core.simple.command"><span class="typeNameLink">SubshellCommand</span></a> - Class in <a href="org/dellroad/jct/core/simple/command/package-summary.html">org.dellroad.jct.core.simple.command</a></dt>
 <dd>
-<div class="block">A command that fires up a subshell within an outer shell.</div>
+<div class="block">A command that fires up subshell sessions.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/command/SubshellCommand.html#%3Cinit%3E(org.dellroad.jct.core.Shell,java.lang.String,java.lang.String,java.lang.String)">SubshellCommand(Shell, String, String, String)</a></span> - Constructor for class org.dellroad.jct.core.simple.command.<a href="org/dellroad/jct/core/simple/command/SubshellCommand.html" title="class in org.dellroad.jct.core.simple.command">SubshellCommand</a></dt>
 <dd>
