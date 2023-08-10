@@ -44,7 +44,7 @@ public class SubshellCommand extends AbstractSimpleCommand {
 // AbstractSimpleCommand
 
     @Override
-    public final int execute(ConsoleSession<?, ?> session0, String name, List<String> params) throws InterruptedException {
+    public int execute(ConsoleSession<?, ?> session0, String name, List<String> params) throws InterruptedException {
 
         // Sanity check
         if (!(session0 instanceof ShellSession)) {
