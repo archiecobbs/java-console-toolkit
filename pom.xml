@@ -18,8 +18,6 @@
         <module>core</module>
         <module>demo</module>
         <module>jshell</module>
-        <module>picocli</module>
-        <module>spring</module>
         <module>ssh</module>
     </modules>
     <licenses>
@@ -121,13 +119,6 @@
             </dependency>
 
             <!-- JLine -->
-        <!--
-            <dependency>
-                <groupId>org.jline</groupId>
-                <artifactId>jline</artifactId>
-                <version>${jline.version}</version>
-            </dependency>
-        -->
             <dependency>
                 <groupId>org.jline</groupId>
                 <artifactId>jline-reader</artifactId>
@@ -154,17 +145,7 @@
             </dependency>
             <dependency>
                 <groupId>org.dellroad</groupId>
-                <artifactId>java-console-toolkit-picocli</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dellroad</groupId>
                 <artifactId>java-console-toolkit-ssh</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dellroad</groupId>
-                <artifactId>java-console-toolkit-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
