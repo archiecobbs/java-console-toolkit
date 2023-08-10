@@ -51,6 +51,25 @@ A **batch script** is a text file containing multiple commands intended to be ex
 The **demo** module allows you to test out the current JCT features (and see some sample code):
 
 ```
+$ java -jar java-console-toolkit-demo-1.0.0.jar --help
+Usage:
+    jct-demo [options] [command ...]
+Options:
+    --ssh                        Enable SSH server
+    --ssh-auth-keys-file path    Specify SSH authorized users file (default ~/.ssh/authorized_keys)
+    --ssh-host-key-file path     Specify SSH host key file (default hostkey)
+    --ssh-listen-port port       Specify SSH server TCP port (default 9191)
+    --help                       Display this usage message
+Commands:
+    date                         Display the current time and date.
+    echo                         Echoes command line arguments.
+    exit                         Exit the shell.
+    help                         Displays information about available commands.
+    jshell                       Fire up a JShell console.
+    quit                         Exit the shell.
+    sleep                        Sleep for a while.
+$ java -jar java-console-toolkit-demo-1.0.0.jar date
+Thu Aug 10 16:26:08 CDT 2023
 $ java -jar java-console-toolkit-demo-1.0.0.jar
 Welcome to org.dellroad.jct.core.simple.SimpleShell
 jct> help
@@ -77,6 +96,8 @@ jct> sleep 9999
 ^C
 jct> exit
 ```
+
+Note: the `jshell` command only appears if on JDK 9 or later.
 
 ### API Docs
 
