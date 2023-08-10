@@ -59,7 +59,7 @@ public class SubshellCommand extends AbstractSimpleCommand {
         // Create subshell
         final ShellSession subSession;
         try {
-            subSession = this.createSubShell(request);
+            subSession = this.createSubshell(request);
         } catch (IOException e) {
             session.getErrorStream().println(String.format("Error: %s", e));
             return 1;
@@ -75,8 +75,11 @@ public class SubshellCommand extends AbstractSimpleCommand {
      * @param request subshell session request
      * @return subshell session
      * @throws IOException if an I/O error occurs
+     * @throws IllegalArgumentException if {@code request} is null
      */
-    protected ShellSession createSubShell(ShellRequest request) throws IOException {
+    protected ShellSession createSubshell(ShellRequest request) throws IOException {
+        if (request == null)
+            throw new IllegalArgumentException("null request");
         return this.shell.newShellSession(request);
     }
 
