@@ -1,3 +1,9 @@
+Version Next
+
+    - Add new subclass hook method SubshellCommand.executeSubshell().
+    - Allow SSH host key to be configured via classpath resource.
+    - Add local context class loading workaround to JShellCommand.
+
 Version 1.0.0 Released Aug 9, 2023
 
     - Initial release

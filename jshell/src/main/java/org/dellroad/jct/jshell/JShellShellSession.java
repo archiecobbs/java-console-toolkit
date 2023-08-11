@@ -7,11 +7,9 @@ package org.dellroad.jct.jshell;
 
 import java.io.PrintStream;
 
-import jdk.jshell.execution.LocalExecutionControlProvider;
 import jdk.jshell.tool.JavaShellToolBuilder;
 
 import org.dellroad.jct.core.AbstractShellSession;
-import org.dellroad.jct.core.Shell;
 import org.dellroad.jct.core.ShellRequest;
 import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.util.ConsoleUtil;
@@ -22,13 +20,7 @@ import org.jline.terminal.Terminal;
  * A {@link ShellSession} that builds and executes a {@link jdk.jshell.JShell} instance.
  *
  * <p>
- * The {@link jdk.jshell.JShell} instance can be customized in two ways:
- * <ul>
- *  <li>Overriding {@link #createBuilder createBuilder()} allows customization of the {@link JavaShellToolBuilder}.
- *  <li>The flags in {@link ShellRequest#getShellArguments} are passed to {@link JavaShellToolBuilder#start}.
- * </ul>
- * As an example of the latter, including {@code "--execution=local"} would configure a {@link LocalExecutionControlProvider},
- * which makes it possible to access objects in the current JVM.
+ * See {@link JShellCommand} for details.
  */
 public class JShellShellSession extends AbstractShellSession {
 
@@ -39,8 +31,13 @@ public class JShellShellSession extends AbstractShellSession {
      * @param request shell request
      * @throws IllegalArgumentException if any parameter is null
      */
-    public JShellShellSession(Shell shell, ShellRequest request) {
+    public JShellShellSession(JShellShell shell, ShellRequest request) {
         super(shell, request);
+    }
+
+    @Override
+    public JShellShell getOwner() {
+        return (JShellShell)super.getOwner();
     }
 
 // AbstractShellSession
@@ -53,7 +50,7 @@ public class JShellShellSession extends AbstractShellSession {
 
     @Override
     protected int doExecute() throws InterruptedException {
-        final JavaShellToolBuilder builder = this.createBuilder(this.request);
+        final JavaShellToolBuilder builder = this.getOwner().createBuilder(this);
         final Terminal terminal = this.request.getTerminal();
         final Attributes attr = terminal.enterRawMode();
         try {
@@ -64,23 +61,5 @@ public class JShellShellSession extends AbstractShellSession {
         } finally {
             terminal.setAttributes(attr);
         }
-    }
-
-// Subclass Methods
-
-    /**
-     * Create and configure the JShell builder.
-     *
-     * @param request session request
-     * @return new builder
-     */
-    protected JavaShellToolBuilder createBuilder(ShellRequest request) {
-        final JavaShellToolBuilder builder = JavaShellToolBuilder.builder();
-        builder.interactiveTerminal(true);
-        builder.env(this.request.getEnvironment());
-        //builder.locale(???);  TODO
-        builder.in(this.in, this.in);
-        builder.out(this.out);
-        return builder;
     }
 }
