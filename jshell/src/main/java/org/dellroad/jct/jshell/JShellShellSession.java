@@ -24,6 +24,8 @@ import org.jline.terminal.Terminal;
  */
 public class JShellShellSession extends AbstractShellSession {
 
+    private static final InheritableThreadLocal<JShellShellSession> CURRENT_SESSION = new InheritableThreadLocal<>();
+
     /**
      * Constructor.
      *
@@ -34,6 +36,19 @@ public class JShellShellSession extends AbstractShellSession {
     public JShellShellSession(JShellShell shell, ShellRequest request) {
         super(shell, request);
     }
+
+// Public Methods
+
+    /**
+     * Get the instance associated with the current thread.
+     *
+     * @return session associated with the current thread, or null if not found
+     */
+    public static JShellShellSession getCurrent() {
+        return CURRENT_SESSION.get();
+    }
+
+// AbstractConsoleSession
 
     @Override
     public JShellShell getOwner() {
@@ -53,12 +68,16 @@ public class JShellShellSession extends AbstractShellSession {
         final JavaShellToolBuilder builder = this.getOwner().createBuilder(this);
         final Terminal terminal = this.request.getTerminal();
         final Attributes attr = terminal.enterRawMode();
+        final Thread currentThread = Thread.currentThread();
+        final JShellShellSession previousSession = CURRENT_SESSION.get();
+        CURRENT_SESSION.set(this);
         try {
             return builder.start(this.request.getShellArguments().toArray(new String[0]));
         } catch (Exception e) {
             this.out.println(String.format("Error: %s", e));
             return 1;
         } finally {
+            CURRENT_SESSION.set(previousSession);
             terminal.setAttributes(attr);
         }
     }
