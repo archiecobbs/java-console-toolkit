@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":9,"i1":9};
+var data = {"i0":9,"i1":9,"i2":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -156,6 +156,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJavaVersion()">getJavaVersion</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Determine the current JDK version.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>static org.jline.terminal.Terminal.SignalHandler</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#interrruptHandler(java.util.function.Supplier,org.jline.terminal.Terminal.SignalHandler)">interrruptHandler</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;? extends <a href="../ConsoleSession.html" title="interface in org.dellroad.jct.core">ConsoleSession</a>&lt;?,&#8203;?&gt;&gt;&nbsp;sessionGetter,
                  org.jline.terminal.Terminal.SignalHandler&nbsp;fallthroughHandler)</code></th>
@@ -164,7 +171,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  when a <code>Terminal.Signal.INT</code> signal is received.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintStream.html?is-external=true" title="class or interface in java.io" class="externalLink">PrintStream</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unclosable(java.io.PrintStream)">unclosable</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintStream.html?is-external=true" title="class or interface in java.io" class="externalLink">PrintStream</a>&nbsp;stream)</code></th>
 <td class="colLast">
@@ -195,6 +202,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="getJavaVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getJavaVersion</h4>
+<pre class="methodSignature">public static&nbsp;int&nbsp;getJavaVersion()</pre>
+<div class="block">Determine the current JDK version.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>current JDK version as an integer</dd>
+</dl>
+</li>
+</ul>
 <a id="interrruptHandler(java.util.function.Supplier,org.jline.terminal.Terminal.SignalHandler)">
 <!--   -->
 </a>

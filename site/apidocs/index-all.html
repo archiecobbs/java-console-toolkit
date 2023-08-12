@@ -281,7 +281,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo"><span class="typeNameLink">DemoMain</span></a> - Class in <a href="org/dellroad/jct/demo/package-summary.html">org.dellroad.jct.demo</a></dt>
 <dd>
-<div class="block">Demonstration of various Java Console Toolkit components.</div>
+<div class="block">Demonstration of various Java Console Toolkit functionality.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#%3Cinit%3E()">DemoMain()</a></span> - Constructor for class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
 <dd>&nbsp;</dd>
@@ -412,10 +412,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dl>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html#generate(jdk.jshell.spi.ExecutionEnv,java.util.Map)">generate(ExecutionEnv, Map&lt;String, String&gt;)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell">LocalContextExecutionControlProvider</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellCommand.html#generateLocalExecutionFlags(java.lang.ClassLoader)">generateLocalExecutionFlags(ClassLoader)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellCommand.html" title="class in org.dellroad.jct.jshell">JShellCommand</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html#generateJShellFlags(java.lang.ClassLoader)">generateJShellFlags(ClassLoader)</a></span> - Static method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell">LocalContextExecutionControlProvider</a></dt>
 <dd>
-<div class="block">Generate a list of JShell tool command line flags for local (same process) execution with
- access to all classes that are already available to the given class loader.</div>
+<div class="block">Generate a list of JShell tool command line flags to enable use of this class.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/MemoryClassLoader.html#getClass(java.lang.String)">getClass(String)</a></span> - Method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/MemoryClassLoader.html" title="class in org.dellroad.jct.jshell">MemoryClassLoader</a></dt>
 <dd>
@@ -453,6 +452,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/SimpleShell.html#getContinuationPrompt()">getContinuationPrompt()</a></span> - Method in class org.dellroad.jct.core.simple.<a href="org/dellroad/jct/core/simple/SimpleShell.html" title="class in org.dellroad.jct.core.simple">SimpleShell</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/JShellShellSession.html#getCurrent()">getCurrent()</a></span> - Static method in class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/JShellShellSession.html" title="class in org.dellroad.jct.jshell">JShellShellSession</a></dt>
+<dd>
+<div class="block">Get the instance associated with the current thread.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#getDefaultAuthKeysFile()">getDefaultAuthKeysFile()</a></span> - Method in class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#getDefaultHostKeyFile()">getDefaultHostKeyFile()</a></span> - Method in class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
@@ -519,8 +522,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/SimpleExecRequest.html#getInputStream()">getInputStream()</a></span> - Method in class org.dellroad.jct.core.simple.<a href="org/dellroad/jct/core/simple/SimpleExecRequest.html" title="class in org.dellroad.jct.core.simple">SimpleExecRequest</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#getJavaVersion()">getJavaVersion()</a></span> - Method in class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#getInstance()">getInstance()</a></span> - Static method in class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/dellroad/jct/core/util/ConsoleUtil.html#getJavaVersion()">getJavaVersion()</a></span> - Static method in class org.dellroad.jct.core.util.<a href="org/dellroad/jct/core/util/ConsoleUtil.html" title="class in org.dellroad.jct.core.util">ConsoleUtil</a></dt>
+<dd>
+<div class="block">Determine the current JDK version.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/core/simple/SimpleCommandSupport.FoundCommand.html#getName()">getName()</a></span> - Method in class org.dellroad.jct.core.simple.<a href="org/dellroad/jct/core/simple/SimpleCommandSupport.FoundCommand.html" title="class in org.dellroad.jct.core.simple">SimpleCommandSupport.FoundCommand</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/demo/DemoMain.html#getName()">getName()</a></span> - Method in class org.dellroad.jct.demo.<a href="org/dellroad/jct/demo/DemoMain.html" title="class in org.dellroad.jct.demo">DemoMain</a></dt>
@@ -719,8 +726,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell"><span class="typeNameLink">LocalContextExecutionControlProvider</span></a> - Class in <a href="org/dellroad/jct/jshell/package-summary.html">org.dellroad.jct.jshell</a></dt>
 <dd>
-<div class="block">Same as <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControlProvider.html?is-external=true" title="class or interface in jdk.jshell.execution" class="externalLink"><code>LocalExecutionControlProvider</code></a> but configures the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControl.html?is-external=true" title="class or interface in jdk.jshell.execution" class="externalLink"><code>LocalExecutionControl</code></a>s
- that it creates with a <a href="org/dellroad/jct/jshell/MemoryLoaderDelegate.html" title="class in org.dellroad.jct.jshell"><code>MemoryLoaderDelegate</code></a>.</div>
+<div class="block">Same as <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/execution/LocalExecutionControlProvider.html?is-external=true" title="class or interface in jdk.jshell.execution" class="externalLink"><code>LocalExecutionControlProvider</code></a>, but with additional support for handling certain
+ class path and class loading issues.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html#%3Cinit%3E()">LocalContextExecutionControlProvider()</a></span> - Constructor for class org.dellroad.jct.jshell.<a href="org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell">LocalContextExecutionControlProvider</a></dt>
 <dd>&nbsp;</dd>

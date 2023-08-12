@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -267,14 +267,6 @@ extends <a href="../core/simple/command/SubshellCommand.html" title="class in or
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#generateLocalExecutionFlags(java.lang.ClassLoader)">generateLocalExecutionFlags</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a>&nbsp;loader)</code></th>
-<td class="colLast">
-<div class="block">Generate a list of JShell tool command line flags for local (same process) execution with
- access to all classes that are already available to the given class loader.</div>
-</td>
-</tr>
-<tr id="i4" class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSourceClassLoader()">getSourceClassLoader</a></span>()</code></th>
 <td class="colLast">
@@ -439,7 +431,7 @@ extends <a href="../core/simple/command/SubshellCommand.html" title="class in or
  <p>
  The implementation in <a href="JShellCommand.html" title="class in org.dellroad.jct.jshell"><code>JShellCommand</code></a> just returns the list unmodified unless
  <a href="#enableLocalContextExecution()"><code>enableLocalContextExecution()</code></a> has been invoked, in which case the parameters
- returned by <a href="#generateLocalExecutionFlags(java.lang.ClassLoader)"><code>generateLocalExecutionFlags()</code></a> are
+ returned by <a href="LocalContextExecutionControlProvider.html#generateJShellFlags(java.lang.ClassLoader)"><code>LocalContextExecutionControlProvider.generateJShellFlags(java.lang.ClassLoader)</code></a> are
  prepended.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -454,7 +446,7 @@ extends <a href="../core/simple/command/SubshellCommand.html" title="class in or
 <a id="getSourceClassLoader()">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>getSourceClassLoader</h4>
 <pre class="methodSignature">protected&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a>&nbsp;getSourceClassLoader()</pre>
@@ -462,38 +454,12 @@ extends <a href="../core/simple/command/SubshellCommand.html" title="class in or
  when the local class loading workaround is enabled.
 
  <p>
- The instance in <a href="JShellCommand.html" title="class in org.dellroad.jct.jshell"><code>JShellCommand</code></a> return this class' loader.</div>
+ The implementation in <a href="JShellCommand.html" title="class in org.dellroad.jct.jshell"><code>JShellCommand</code></a> always returns null.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>class path for source compilation</dd>
-</dl>
-</li>
-</ul>
-<a id="generateLocalExecutionFlags(java.lang.ClassLoader)">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>generateLocalExecutionFlags</h4>
-<pre class="methodSignature">protected&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;generateLocalExecutionFlags&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a>&nbsp;loader)</pre>
-<div class="block">Generate a list of JShell tool command line flags for local (same process) execution with
- access to all classes that are already available to the given class loader.
-
- <p>
- This method only works properly with <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLClassLoader.html?is-external=true" title="class or interface in java.net" class="externalLink"><code>URLClassLoader</code></a>; others are silently ignored.
- If the given class loader (or any parent) is not an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLClassLoader.html?is-external=true" title="class or interface in java.net" class="externalLink"><code>URLClassLoader</code></a>, then this method
- will not be able to add all of the items in the current classpath.
-
- <p>
- This is required as part of the local class loading workaround to synchronize JShell's snippet
- compilation classpath match the execution engine's class loading classpath.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>loader</code> - loader to copy from</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>JShell flags to enable the local context execution workaround</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - if <code>loader</code> is null</dd>
+<dd>class loader for source compilation, or null to use the current thread's context class loader</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="LocalContextExecutionControlProvider.html#generateJShellFlags(java.lang.ClassLoader)"><code>LocalContextExecutionControlProvider.generateJShellFlags(java.lang.ClassLoader)</code></a></dd>
 </dl>
 </li>
 </ul>
