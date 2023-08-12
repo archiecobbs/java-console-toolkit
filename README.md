@@ -39,6 +39,7 @@ This project is a work in progress.
 * JShell integration
   * Direct execution as primary shell
   * Subshell execution via separate command
+  * Local execution + class path/loading fixes
 
 **Possible future features:**
 * Glue for Spring Shell
@@ -87,6 +88,7 @@ Additional "glue":
 
 * [`SimpleConsoleSshServer`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/ssh/simple/SimpleConsoleSshServer.html) - SSH server configured with an `Exec` and/or `Shell`
 * [`JShellShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/JShellShell.html) - A `Shell` wrapper around JShell.
+* [`LocalContextExecutionControlProvider`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html) - Workaround for JShell local execution class path/loading issues
 
 Note: `JShell` support is only available on JDK 9 or later.
 
@@ -95,7 +97,7 @@ Note: `JShell` support is only available on JDK 9 or later.
 The **demo** module allows you to test out the current JCT features (and see some sample code):
 
 ```
-$ java -jar java-console-toolkit-demo-1.0.0.jar --help
+$ java -jar java-console-toolkit-demo-1.0.1.jar --help
 Usage:
     jct-demo [options] [command ...]
 Options:
@@ -112,9 +114,9 @@ Commands:
     jshell                       Fire up a JShell console.
     quit                         Exit the shell.
     sleep                        Sleep for a while.
-$ java -jar java-console-toolkit-demo-1.0.0.jar date
-Thu Aug 10 16:26:08 CDT 2023
-$ java -jar java-console-toolkit-demo-1.0.0.jar
+$ java -jar java-console-toolkit-demo-1.0.1.jar date
+Sat Aug 12 13:30:11 CDT 2023
+$ java -jar java-console-toolkit-demo-1.0.1.jar
 Welcome to org.dellroad.jct.core.simple.SimpleShell
 jct> help
   date    Display the current time and date.
@@ -125,8 +127,22 @@ jct> help
   quit    Exit the shell.
   sleep   Sleep for a while.
 jct> jshell
+
+*** Welcome to the java-console-toolkit JShell demo.
+*** The DemoMain singleton is available as "demo".
+*** The JShellShellSession singleton is available as "session".
+
 |  Welcome to JShell -- Version 20.0.1
 |  For an introduction type: /help intro
+
+jshell> /vars
+|    ClassLoader loader = org.dellroad.jct.jshell.MemoryClassLoader@23fe1d71
+|    Object session = org.dellroad.jct.jshell.JShellShellSession@4d518b32
+|    PrintStream out = org.dellroad.jct.core.util.ConsoleUtil$1@6304101a
+|    Object demo = org.dellroad.jct.demo.DemoMain@146dfe6
+
+jshell> demo.hashCode()
+$1 ==> 21422054
 
 jshell> 2 + 2
 $1 ==> 4
@@ -143,6 +159,7 @@ $ echo $?
 123
 ```
 
-### API Docs
+### More Docs
 
 * [Javadocs API](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/index.html)
+* [Maven Site](https://archiecobbs.github.io/java-console-toolkit/site/index.html)
