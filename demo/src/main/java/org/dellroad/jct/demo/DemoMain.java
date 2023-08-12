@@ -35,9 +35,11 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 /**
- * Demonstration of various Java Console Toolkit components.
+ * Demonstration of various Java Console Toolkit functionality.
  */
 public class DemoMain {
+
+    private static DemoMain instance;
 
     private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
 
@@ -54,6 +56,10 @@ public class DemoMain {
 
     public String getName() {
         return "jct-demo";
+    }
+
+    public static DemoMain getInstance() {
+        return DemoMain.instance;
     }
 
     public int run(String[] args) {
@@ -248,13 +254,21 @@ public class DemoMain {
     }
 
     public static void main(String[] args) {
+
+        // Create demo singleton
+        final DemoMain demo = new DemoMain();
+        DemoMain.instance = demo;
+
+        // Run the demo
         int exitValue;
         try {
-            exitValue = new DemoMain().run(args);
+            exitValue = demo.run(args);
         } catch (RuntimeException e) {
             e.printStackTrace(System.err);
             exitValue = 1;
         }
+
+        // Done
         System.exit(exitValue);
     }
 
