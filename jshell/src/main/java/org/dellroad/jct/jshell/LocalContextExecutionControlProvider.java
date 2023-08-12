@@ -5,7 +5,6 @@
 
 package org.dellroad.jct.jshell;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import jdk.jshell.execution.LocalExecutionControl;
