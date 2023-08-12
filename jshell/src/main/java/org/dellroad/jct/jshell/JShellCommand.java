@@ -5,13 +5,6 @@
 
 package org.dellroad.jct.jshell;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +113,7 @@ public class JShellCommand extends SubshellCommand {
      * <p>
      * The implementation in {@link JShellCommand} just returns the list unmodified unless
      * {@link #enableLocalContextExecution} has been invoked, in which case the parameters
-     * returned by {@link #generateLocalExecutionFlags generateLocalExecutionFlags()} are
+     * returned by {@link LocalContextExecutionControlProvider#generateJShellFlags} are
      * prepended.
      *
      * @param commandLineParams parameters given to the shell command line
@@ -133,7 +126,7 @@ public class JShellCommand extends SubshellCommand {
         if (!this.localContextExecution)
             return commandLineParams;
         final ArrayList<String> newParams = new ArrayList<>();
-        newParams.addAll(this.generateLocalExecutionFlags(this.getSourceClassLoader()));
+        newParams.addAll(LocalContextExecutionControlProvider.generateJShellFlags(this.getSourceClassLoader()));
         newParams.addAll(commandLineParams);
         return newParams;
     }
@@ -143,66 +136,12 @@ public class JShellCommand extends SubshellCommand {
      * when the local class loading workaround is enabled.
      *
      * <p>
-     * The instance in {@link JShellCommand} return this class' loader.
+     * The implementation in {@link JShellCommand} always returns null.
      *
-     * @return class path for source compilation
+     * @return class loader for source compilation, or null to use the current thread's context class loader
+     * @see LocalContextExecutionControlProvider#generateJShellFlags
      */
     protected ClassLoader getSourceClassLoader() {
-        return this.getClass().getClassLoader();
-    }
-
-    /**
-     * Generate a list of JShell tool command line flags for local (same process) execution with
-     * access to all classes that are already available to the given class loader.
-     *
-     * <p>
-     * This method only works properly with {@link URLClassLoader}; others are silently ignored.
-     * If the given class loader (or any parent) is not an {@link URLClassLoader}, then this method
-     * will not be able to add all of the items in the current classpath.
-     *
-     * <p>
-     * This is required as part of the local class loading workaround to synchronize JShell's snippet
-     * compilation classpath match the execution engine's class loading classpath.
-     *
-     * @param loader loader to copy from
-     * @throws IllegalArgumentException if {@code loader} is null
-     * @return JShell flags to enable the local context execution workaround
-     */
-    protected List<String> generateLocalExecutionFlags(ClassLoader loader) {
-        if (loader == null)
-            throw new IllegalArgumentException("null loader");
-        final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        final StringBuilder classPath = new StringBuilder();
-        for ( ; loader != null && loader != systemClassLoader; loader = loader.getParent()) {
-            final URLClassLoader urlLoader;
-            try {
-                urlLoader = (URLClassLoader)loader;
-            } catch (ClassCastException e) {
-                continue;
-            }
-            for (URL url : urlLoader.getURLs()) {
-                final URI uri;
-                try {
-                    uri = url.toURI();
-                } catch (URISyntaxException e) {
-                    continue;
-                }
-                final File file;
-                try {
-                    file = Paths.get(uri).toFile();
-                } catch (IllegalArgumentException | FileSystemNotFoundException e) {
-                    continue;
-                }
-                if (classPath.length() > 0)
-                    classPath.append(':');
-                classPath.append(file.toString());
-            }
-        }
-        final ArrayList<String> list = new ArrayList<>(2);
-        list.add("--execution");
-        list.add(LocalContextExecutionControlProvider.NAME);
-        list.add("--class-path");
-        list.add(classPath.toString());
-        return list;
+        return null;
     }
 }

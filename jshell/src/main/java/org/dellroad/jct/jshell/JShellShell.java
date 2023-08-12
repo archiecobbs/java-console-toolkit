@@ -35,7 +35,7 @@ public class JShellShell implements Shell {
         final JavaShellToolBuilder builder = JavaShellToolBuilder.builder();
         builder.interactiveTerminal(true);
         builder.env(session.getRequest().getEnvironment());
-        //builder.locale(???);  TODO
+        //builder.locale(???);
         builder.in(session.getInputStream(), session.getInputStream());
         builder.out(session.getOutputStream());
         return builder;
