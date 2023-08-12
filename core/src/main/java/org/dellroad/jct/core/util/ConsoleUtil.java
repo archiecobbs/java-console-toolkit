@@ -9,6 +9,8 @@ import java.io.FilterOutputStream;
 import java.io.PrintStream;
 import java.util.Locale;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.jline.terminal.Terminal;
@@ -20,6 +22,24 @@ import org.jline.terminal.TerminalBuilder;
 public final class ConsoleUtil {
 
     private ConsoleUtil() {
+    }
+
+    /**
+     * Determine the current JDK version.
+     *
+     * @return current JDK version as an integer
+     */
+    public static int getJavaVersion() {
+        final String vers = System.getProperty("java.version");
+        final Matcher matcher = Pattern.compile("1\\.([0-9]+).*|(9|[1-9][0-9]+)\\..*").matcher(vers);
+        try {
+            if (!matcher.matches())
+                throw new NumberFormatException();
+            final String vnum = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+            return Integer.parseInt(vnum, 10);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("can't determine JDK version from \"" + vers + "\"");
+        }
     }
 
     /**

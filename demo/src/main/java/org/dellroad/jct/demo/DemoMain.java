@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.dellroad.jct.core.ShellSession;
@@ -48,23 +46,10 @@ public class DemoMain {
         commandMap.put("echo", new EchoCommand());
         commandMap.put("exit", new ExitCommand());
         commandMap.put("help", new HelpCommand());
-        if (this.getJavaVersion() >= 9)
+        if (ConsoleUtil.getJavaVersion() >= 9)
             commandMap.put("jshell", new JShellCommandCreator().create());
         commandMap.put("quit", new ExitCommand());
         commandMap.put("sleep", new SleepCommand());
-    }
-
-    public int getJavaVersion() {
-        final String vers = System.getProperty("java.version");
-        final Matcher matcher = Pattern.compile("1\\.([0-9]+).*|(9|[1-9][0-9]+)\\..*").matcher(vers);
-        try {
-            if (!matcher.matches())
-                throw new NumberFormatException();
-            final String vnum = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-            return Integer.parseInt(vnum, 10);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("can't determine JDK version from \"" + vers + "\"");
-        }
     }
 
     public String getName() {
