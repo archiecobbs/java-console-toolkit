@@ -1,4 +1,4 @@
-Version Next
+Version 1.0.1 Released Aug 12, 2023
 
     - Add new subclass hook method SubshellCommand.executeSubshell().
     - Allow SSH host key to be configured via classpath resource.
