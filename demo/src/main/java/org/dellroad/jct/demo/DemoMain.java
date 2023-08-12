@@ -12,6 +12,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -274,10 +275,31 @@ public class DemoMain {
 
 // JShellCommandCreator
 
-    // This separate class avoids a resolution error on JDK versions < 9
+    // This separate class avoids a class resolution error if JDK version < 9
     private static final class JShellCommandCreator {
+
         JShellCommand create() {
-            return new JShellCommand();
+            final JShellCommand command = new JShellCommand() {
+
+                // Add startup script to the jshell command line (if found)
+                @Override
+                protected List<String> buildJShellParams(List<String> commandLineParams) {
+                    final List<String> jshellParams = new ArrayList<>();
+                    final File startupFile = new File("startup.jsh");
+                    if (startupFile.exists()) {
+                        jshellParams.add("--startup");
+                        jshellParams.add(startupFile.toString());
+                    }
+                    jshellParams.addAll(super.buildJShellParams(commandLineParams));
+                    return jshellParams;
+                }
+            };
+
+            // This fixes some class path and class loader issues
+            command.enableLocalContextExecution();
+
+            // Done
+            return command;
         }
     }
 }
