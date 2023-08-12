@@ -40,12 +40,18 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         // Create our class loader
         final MemoryClassLoader memoryLoader = this.createMemoryClassLoader();
 
+        // Set our class loader as the context loader for the current thread.
+        // Note: this action gets undone in JShellShellSession.doExecute().
+        Thread.currentThread().setContextClassLoader(memoryLoader);
+
         // Create our delegate thingie
         final MemoryLoaderDelegate delegate = this.createMemoryLoaderDelegate(memoryLoader);
 
         // Create local ExecutionControl using delegate
         return new LocalExecutionControl(delegate);
     }
+
+// Subclass Methods
 
     protected MemoryLoaderDelegate createMemoryLoaderDelegate(MemoryClassLoader memoryLoader) {
         return new MemoryLoaderDelegate(memoryLoader);

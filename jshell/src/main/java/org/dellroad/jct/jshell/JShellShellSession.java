@@ -69,6 +69,7 @@ public class JShellShellSession extends AbstractShellSession {
         final Terminal terminal = this.request.getTerminal();
         final Attributes attr = terminal.enterRawMode();
         final Thread currentThread = Thread.currentThread();
+        final ClassLoader previousLoader = currentThread.getContextClassLoader();
         final JShellShellSession previousSession = CURRENT_SESSION.get();
         CURRENT_SESSION.set(this);
         try {
@@ -78,6 +79,7 @@ public class JShellShellSession extends AbstractShellSession {
             return 1;
         } finally {
             CURRENT_SESSION.set(previousSession);
+            currentThread.setContextClassLoader(previousLoader);
             terminal.setAttributes(attr);
         }
     }
