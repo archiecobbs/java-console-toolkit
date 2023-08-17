@@ -34,13 +34,25 @@ import java.util.stream.Stream;
  * in memory from which classes may be loaded.
  *
  * <p>
- * Classes found by this loader are assigned {@link URL}s that look like {@code memory:/com.example.MyClass}.
+ * The internal cache of classes is initially empty. Binary class files may be added (or removed) via
+ * {@link #putClass putClass()}, and retrieved via {@link #getClass(String) getClass()}. The {@code byte[]}
+ * arrays passed to and from these methods are copied to ensure immutability.
+ *
+ * <p>
+ * Classes defined by this loader are assigned {@link URL}s that look like {@code memory:/com.example.MyClass}.
+ *
+ * <p>
+ * This class is thread safe and {@linkplain #registerAsParallelCapable parallel capable}.
  */
 public class MemoryClassLoader extends URLClassLoader {
 
     public static final String MEMORY_URL_SCHEME = "memory";
 
     private final Map<String, ClassData> classDataMap = new HashMap<>();
+
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
 // Constructor
 
@@ -70,6 +82,7 @@ public class MemoryClassLoader extends URLClassLoader {
      *
      * <p>
      * If an existing class already exists under {@code className}, it will be replaced.
+     * The {@code classbytes} array is copied to ensure immutability.
      *
      * <p>
      * If {@code classbytes} is null, any existing class will be removed.
@@ -83,7 +96,7 @@ public class MemoryClassLoader extends URLClassLoader {
             throw new IllegalArgumentException("null className");
         synchronized (this) {
             if (classbytes != null)
-                this.classDataMap.put(className, new ClassData(classbytes));
+                this.classDataMap.put(className, new ClassData(classbytes.clone()));
             else
                 this.classDataMap.remove(className);
         }
@@ -92,11 +105,14 @@ public class MemoryClassLoader extends URLClassLoader {
     /**
      * Get the class from this loader that was previously added via {@link #putClass putClass()}, if any.
      *
+     * <p>
+     * The returned array is a copy to ensure immutability.
+     *
      * @param className Java class name
-     * @return previously added class, or null if none exists
+     * @return class file previously added under the name {@code className}, or null if none exists
      */
-    public synchronized ClassData getClass(String className) {
-        return this.classDataMap.get(className);
+    public synchronized byte[] getClass(String className) {
+        return this.classDataMap.get(className).getClassbytes().clone();
     }
 
 // URLClassLoader

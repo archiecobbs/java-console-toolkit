@@ -1,3 +1,7 @@
+Version Next
+
+    - A few improvements to MemoryClassLoader.
+
 Version 1.0.1 Released Aug 12, 2023
 
     - Add new subclass hook method SubshellCommand.executeSubshell().
