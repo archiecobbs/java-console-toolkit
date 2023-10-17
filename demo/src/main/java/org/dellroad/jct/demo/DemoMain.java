@@ -45,14 +45,18 @@ public class DemoMain {
     private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
 
     public DemoMain() {
+
+        // Simple commands
         commandMap.put("date", new DateCommand());
         commandMap.put("echo", new EchoCommand());
         commandMap.put("exit", new ExitCommand());
         commandMap.put("help", new HelpCommand());
-        if (ConsoleUtil.getJavaVersion() >= 9)
-            commandMap.put("jshell", new JShellCommandCreator().create());
         commandMap.put("quit", new ExitCommand());
         commandMap.put("sleep", new SleepCommand());
+
+        // JShell command
+        if (ConsoleUtil.getJavaVersion() >= 9)
+            commandMap.put("jshell", new JShellCommandCreator().create());
     }
 
     public String getName() {
