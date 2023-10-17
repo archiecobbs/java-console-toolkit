@@ -34,7 +34,7 @@ import org.dellroad.jct.core.simple.command.SubshellCommand;
  * This implementation also registers an {@link ExecutionControl} implementation that is similar to {@link LocalExecutionControl},
  * but delegates to the current thread's context loader as its parent class loader. This fixes issues with finding local classes
  * in certain more complex class loading situations such as running in a web container. Use {@link #enableLocalContextExecution}
- * automatically to enable this behavior.
+ * to enable this behavior.
  */
 public class JShellCommand extends SubshellCommand {
 
@@ -112,23 +112,21 @@ public class JShellCommand extends SubshellCommand {
      *
      * <p>
      * The implementation in {@link JShellCommand} just returns the list unmodified unless
-     * {@link #enableLocalContextExecution} has been invoked, in which case the parameters
-     * returned by {@link LocalContextExecutionControlProvider#generateJShellFlags} are
-     * prepended.
+     * {@link #enableLocalContextExecution} has been invoked, in which case the list is copied,
+     * modified by {@link LocalContextExecutionControlProvider#modifyJShellFlags}, and then returned.
      *
-     * @param commandLineParams parameters given to the shell command line
+     * @param params parameters given to the shell command line
      * @return flags and parameters for JShell
      * @throws IllegalArgumentException if {@code commandLineParams} is null
      */
-    protected List<String> buildJShellParams(List<String> commandLineParams) {
-        if (commandLineParams == null)
-            throw new IllegalArgumentException("null commandLineParams");
-        if (!this.localContextExecution)
-            return commandLineParams;
-        final ArrayList<String> newParams = new ArrayList<>();
-        newParams.addAll(LocalContextExecutionControlProvider.generateJShellFlags(this.getSourceClassLoader()));
-        newParams.addAll(commandLineParams);
-        return newParams;
+    protected List<String> buildJShellParams(List<String> params) {
+        if (params == null)
+            throw new IllegalArgumentException("null params");
+        if (this.localContextExecution) {
+            params = new ArrayList<>(params);
+            LocalContextExecutionControlProvider.modifyJShellFlags(this.getSourceClassLoader(), params);
+        }
+        return params;
     }
 
     /**
@@ -139,7 +137,7 @@ public class JShellCommand extends SubshellCommand {
      * The implementation in {@link JShellCommand} always returns null.
      *
      * @return class loader for source compilation, or null to use the current thread's context class loader
-     * @see LocalContextExecutionControlProvider#generateJShellFlags
+     * @see LocalContextExecutionControlProvider#modifyJShellFlags
      */
     protected ClassLoader getSourceClassLoader() {
         return null;

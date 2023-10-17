@@ -14,9 +14,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import jdk.jshell.execution.LocalExecutionControl;
 import jdk.jshell.execution.LocalExecutionControlProvider;
@@ -73,7 +73,7 @@ import org.dellroad.stuff.java.MemoryClassLoader;
  * </ul>
  *
  * <p>
- * To utilize this class, include the flags returned by {@link #generateJShellFlags generateJShellFlags()}
+ * To utilize this class, include the flags returned by {@link #modifyJShellFlags modifyJShellFlags()}
  * as parameters to JShell startup.
  */
 public class LocalContextExecutionControlProvider implements ExecutionControlProvider {
@@ -83,16 +83,30 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
 // Public Methods
 
     /**
-     * Generate a list of JShell tool command line flags to enable use of this class.
+     * Modify a list of JShell tool command line flags to enable use of this class.
      *
      * @param loader loader to copy from, or null for the current thread's context class loader
-     * @throws IllegalArgumentException if {@code loader} is null
-     * @return JShell flags to enable the local context execution workaround
+     * @param flags modifiable list of command line flags
+     * @throws IllegalArgumentException if {@code flags} is null
      */
-    public static List<String> generateJShellFlags(ClassLoader loader) {
+    public static void modifyJShellFlags(ClassLoader loader, List<String> flags) {
+
+        // Sanity check
+        if (flags == null)
+            throw new IllegalArgumentException("null flags");
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
+
+        // Prepare new classpath
         final StringBuilder classPath = new StringBuilder();
+        final String pathSeparator = System.getProperty("path.separator", ":");
+        final Consumer<Object> pathAdder = obj -> {
+            if (classPath.length() > 0)
+                classPath.append(pathSeparator);
+            classPath.append(obj.toString());
+        };
+
+        // Visit class loader hierarchy
         for ( ; loader != null; loader = loader.getParent()) {
 
             // Extract classpath URLs from this loader
@@ -113,7 +127,6 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
             }
 
             // Pass these URLs to JShell by adding to our "--class-path" flag
-            final String pathSeparator = System.getProperty("path.separator", ":");
             for (URL url : urls) {
                 final URI uri;
                 try {
@@ -127,23 +140,35 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
                 } catch (IllegalArgumentException | FileSystemNotFoundException e) {
                     continue;
                 }
-                if (classPath.length() > 0)
-                    classPath.append(pathSeparator);
-                classPath.append(file.toString());
+                pathAdder.accept(file);
             }
         }
 
-        // Build list of flags
-        final ArrayList<String> list = new ArrayList<>(4);
-        list.add("--execution");
-        list.add(NAME);
-        if (classPath.length() > 0) {
-            list.add("--class-path");
-            list.add(classPath.toString());
+        // Extract and consolidate any existing "--class-path" entries with ours;
+        // earlier JDK versions don't allow more than one "--class-path" flag.
+        int i = 0;
+        while (i < flags.size()) {
+            final String flag = flags.get(i);
+            if (flag.startsWith("--class-path=")) {
+                flags.remove(i);
+                pathAdder.accept(flag.substring("--class-path=".length()));
+            } else if (flag.equals("--class-path")) {
+                flags.remove(i);
+                if (i < flags.size()) {
+                    pathAdder.accept(flags.get(i));
+                    flags.remove(i);
+                }
+            } else
+                i++;
         }
 
-        // Done
-        return list;
+        // Add our flags
+        flags.add("--execution");
+        flags.add(NAME);
+        if (classPath.length() > 0) {
+            flags.add("--class-path");
+            flags.add(classPath.toString());
+        }
     }
 
 // ExecutionControlProvider
