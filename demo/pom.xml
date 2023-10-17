@@ -12,7 +12,6 @@
     </parent>
     <artifactId>java-console-toolkit-demo</artifactId>
     <name>Java Console Toolkit Demo</name>
-    <url>https://github.com/archiecobbs/java-console-toolkit</url>
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>

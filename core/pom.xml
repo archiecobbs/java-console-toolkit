@@ -12,7 +12,6 @@
     </parent>
     <artifactId>java-console-toolkit-core</artifactId>
     <name>Java Console Toolkit Core</name>
-    <url>https://github.com/archiecobbs/java-console-toolkit</url>
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
