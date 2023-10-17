@@ -1,6 +1,7 @@
 Version Next
 
     - A few improvements to MemoryClassLoader.
+    - Added CommandProvider and CommandRegistry.autoGenerate().
 
 Version 1.0.1 Released Aug 12, 2023
 

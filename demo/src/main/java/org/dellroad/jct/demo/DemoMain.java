@@ -12,25 +12,17 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.dellroad.jct.core.ShellSession;
-import org.dellroad.jct.core.simple.SimpleCommand;
+import org.dellroad.jct.core.simple.CommandRegistry;
 import org.dellroad.jct.core.simple.SimpleCommandSupport;
 import org.dellroad.jct.core.simple.SimpleExec;
 import org.dellroad.jct.core.simple.SimpleExecRequest;
 import org.dellroad.jct.core.simple.SimpleShell;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
-import org.dellroad.jct.core.simple.command.DateCommand;
-import org.dellroad.jct.core.simple.command.EchoCommand;
-import org.dellroad.jct.core.simple.command.ExitCommand;
-import org.dellroad.jct.core.simple.command.HelpCommand;
-import org.dellroad.jct.core.simple.command.SleepCommand;
 import org.dellroad.jct.core.util.ConsoleUtil;
-import org.dellroad.jct.jshell.JShellCommand;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -42,22 +34,7 @@ public class DemoMain {
 
     private static DemoMain instance;
 
-    private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
-
-    public DemoMain() {
-
-        // Simple commands
-        commandMap.put("date", new DateCommand());
-        commandMap.put("echo", new EchoCommand());
-        commandMap.put("exit", new ExitCommand());
-        commandMap.put("help", new HelpCommand());
-        commandMap.put("quit", new ExitCommand());
-        commandMap.put("sleep", new SleepCommand());
-
-        // JShell command
-        if (ConsoleUtil.getJavaVersion() >= 9)
-            commandMap.put("jshell", new JShellCommandCreator().create());
-    }
+    private final CommandRegistry commandRegistry = CommandRegistry.autoGenerate();
 
     public String getName() {
         return "jct-demo";
@@ -138,7 +115,7 @@ public class DemoMain {
 
             // Create exec
             final SimpleExec exec = new SimpleExec();
-            exec.setCommandRegistry(() -> this.commandMap);
+            exec.setCommandRegistry(this.commandRegistry);
 
             // Create request
             final SimpleExecRequest request = new SimpleExecRequest(System.in,
@@ -161,8 +138,8 @@ public class DemoMain {
             // Create and configure console components
             final SimpleExec exec = new SimpleExec();
             final SimpleShell shell = new SimpleShell();
-            exec.setCommandRegistry(() -> this.commandMap);
-            shell.setCommandRegistry(() -> this.commandMap);
+            exec.setCommandRegistry(this.commandRegistry);
+            shell.setCommandRegistry(this.commandRegistry);
 
             // Start SSH server
             if (ssh) {
@@ -236,7 +213,7 @@ public class DemoMain {
         out.println(String.format(
           "    --help                       Display this usage message"));
         out.println(String.format("Commands:"));
-        this.commandMap.forEach((name, command) ->
+        this.commandRegistry.getCommands().forEach((name, command) ->
           out.println(String.format("    %-28s %s", name, command.getHelpSummary(name))));
     }
 
@@ -275,35 +252,5 @@ public class DemoMain {
 
         // Done
         System.exit(exitValue);
-    }
-
-// JShellCommandCreator
-
-    // This separate class avoids a class resolution error if JDK version < 9
-    private static final class JShellCommandCreator {
-
-        JShellCommand create() {
-            final JShellCommand command = new JShellCommand() {
-
-                // Add startup script to the jshell command line (if found)
-                @Override
-                protected List<String> buildJShellParams(List<String> commandLineParams) {
-                    final List<String> jshellParams = new ArrayList<>();
-                    final File startupFile = new File("startup.jsh");
-                    if (startupFile.exists()) {
-                        jshellParams.add("--startup");
-                        jshellParams.add(startupFile.toString());
-                    }
-                    jshellParams.addAll(super.buildJShellParams(commandLineParams));
-                    return jshellParams;
-                }
-            };
-
-            // This fixes some class path and class loader issues
-            command.enableLocalContextExecution();
-
-            // Done
-            return command;
-        }
     }
 }

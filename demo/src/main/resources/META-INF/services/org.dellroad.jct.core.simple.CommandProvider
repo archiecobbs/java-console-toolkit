@@ -1,0 +1,5 @@
+# Include the simple commands like "echo", "date", etc.
+org.dellroad.jct.core.simple.command.SimpleCommandProvider
+
+# Include the "jshell" command
+org.dellroad.jct.jshell.JShellCommandProvider
