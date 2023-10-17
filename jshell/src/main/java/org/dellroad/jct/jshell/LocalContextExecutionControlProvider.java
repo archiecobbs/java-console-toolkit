@@ -75,6 +75,8 @@ import org.dellroad.stuff.java.MemoryClassLoader;
  * <p>
  * To utilize this class, include the flags returned by {@link #modifyJShellFlags modifyJShellFlags()}
  * as parameters to JShell startup.
+ *
+ * @see <a href="https://bugs.openjdk.org/browse/JDK-8314327">JDK-8314327</a>
  */
 public class LocalContextExecutionControlProvider implements ExecutionControlProvider {
 
