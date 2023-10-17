@@ -15,6 +15,8 @@ import jdk.jshell.spi.ExecutionControl.ClassInstallException;
 import jdk.jshell.spi.ExecutionControl.EngineTerminationException;
 import jdk.jshell.spi.ExecutionControl.InternalException;
 
+import org.dellroad.stuff.java.MemoryClassLoader;
+
 /**
  * A JShell {@link LoaderDelegate} that uses a {@link MemoryClassLoader}.
  */

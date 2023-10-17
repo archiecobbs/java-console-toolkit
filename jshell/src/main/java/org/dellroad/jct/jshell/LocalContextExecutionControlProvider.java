@@ -24,6 +24,8 @@ import jdk.jshell.spi.ExecutionControl;
 import jdk.jshell.spi.ExecutionControlProvider;
 import jdk.jshell.spi.ExecutionEnv;
 
+import org.dellroad.stuff.java.MemoryClassLoader;
+
 /**
  * Same as {@link LocalExecutionControlProvider}, but with additional support for handling certain
  * class path and class loading issues.

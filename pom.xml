@@ -54,7 +54,7 @@
         <jct.package.root>org.dellroad.jct</jct.package.root>
 
         <!-- Dependency versions - Libraries -->
-        <dellroad-stuff.version>2.5.9</dellroad-stuff.version>
+        <dellroad-stuff.version>2.5.10</dellroad-stuff.version>
         <guava.version>31.1-jre</guava.version>
         <jline.version>3.23.0</jline.version>
         <log4j.version>2.20.0</log4j.version>
