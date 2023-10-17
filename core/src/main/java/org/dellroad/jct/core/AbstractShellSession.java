@@ -24,6 +24,8 @@ public abstract class AbstractShellSession extends AbstractConsoleSession<Shell,
      */
     protected volatile Integer exitValue;
 
+// Constructors
+
     /**
      * Constructor.
      *
@@ -37,6 +39,27 @@ public abstract class AbstractShellSession extends AbstractConsoleSession<Shell,
         this.in = this.buildInputStream(terminal);
         this.out = this.buildOutputStream(terminal);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param owner session owner
+     * @param request associated request
+     * @param in input stream
+     * @param out output stream
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    protected AbstractShellSession(Shell owner, ShellRequest request, InputStream in, PrintStream out) {
+        super(owner, request);
+        if (in == null)
+            throw new IllegalArgumentException("null in");
+        if (out == null)
+            throw new IllegalArgumentException("null out");
+        this.in = in;
+        this.out = out;
+    }
+
+// Subclass Methods
 
     /**
      * Get the {@link InputStream} to use for input from the given {@link Terminal}.
