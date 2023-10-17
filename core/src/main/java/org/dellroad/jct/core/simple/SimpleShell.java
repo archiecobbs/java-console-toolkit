@@ -36,7 +36,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             throw new IllegalArgumentException("null request");
 
         // Return new shell session
-        return new ShellSession(request, this.buildLineReader(request));
+        return new SimpleShellSession(request, this.buildLineReader(request));
     }
 
 // Internal Methods
@@ -93,13 +93,13 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
         }
     }
 
-// ShellSession
+// SimpleShellSession
 
-    private class ShellSession extends AbstractShellSession {
+    private class SimpleShellSession extends AbstractShellSession {
 
         private final LineReader reader;
 
-        ShellSession(ShellRequest request, LineReader reader) {
+        SimpleShellSession(ShellRequest request, LineReader reader) {
             super(SimpleShell.this, request);
             this.reader = reader;
         }
