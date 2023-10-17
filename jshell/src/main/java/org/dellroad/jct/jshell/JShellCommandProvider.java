@@ -5,10 +5,7 @@
 
 package org.dellroad.jct.jshell;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,13 +15,22 @@ import org.dellroad.jct.core.util.ConsoleUtil;
 
 public class JShellCommandProvider implements CommandProvider {
 
+    /**
+     * Determine whether the current version of the JDK supports JShell.
+     *
+     * @return true if JShell supported, otherwise false
+     */
+    public static boolean isJShellSupported() {
+        return ConsoleUtil.getJavaVersion() >= 9;
+    }
+
 // SimpleCommandProvider
 
     @Override
     public Stream<? extends Map.Entry<String, ? extends SimpleCommand>> generateSimpleCommands() {
 
         // Require JDK 9+
-        if (ConsoleUtil.getJavaVersion() < 9)
+        if (!JShellCommandProvider.isJShellSupported())
             return Stream.empty();
 
         // Return our one command
@@ -37,29 +43,8 @@ public class JShellCommandProvider implements CommandProvider {
 
     // This separate class avoids a class resolution error if JDK version < 9
     private static final class JShellCommandCreator {
-
         JShellCommand create() {
-            final JShellCommand command = new JShellCommand() {
-
-                // Add startup script to the jshell command line (if found)
-                @Override
-                protected List<String> buildJShellParams(List<String> commandLineParams) {
-                    final List<String> jshellParams = new ArrayList<>();
-                    final File startupFile = new File("startup.jsh");
-                    if (startupFile.exists()) {
-                        jshellParams.add("--startup");
-                        jshellParams.add(startupFile.toString());
-                    }
-                    jshellParams.addAll(super.buildJShellParams(commandLineParams));
-                    return jshellParams;
-                }
-            };
-
-            // This fixes some class path and class loader issues
-            command.enableLocalContextExecution();
-
-            // Done
-            return command;
+            return new JShellCommand();
         }
     }
 }

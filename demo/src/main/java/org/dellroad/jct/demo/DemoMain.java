@@ -12,17 +12,22 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.simple.CommandRegistry;
+import org.dellroad.jct.core.simple.SimpleCommand;
 import org.dellroad.jct.core.simple.SimpleCommandSupport;
 import org.dellroad.jct.core.simple.SimpleExec;
 import org.dellroad.jct.core.simple.SimpleExecRequest;
 import org.dellroad.jct.core.simple.SimpleShell;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
 import org.dellroad.jct.core.util.ConsoleUtil;
+import org.dellroad.jct.jshell.JShellCommand;
+import org.dellroad.jct.jshell.JShellCommandProvider;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -34,7 +39,13 @@ public class DemoMain {
 
     private static DemoMain instance;
 
-    private final CommandRegistry commandRegistry = CommandRegistry.autoGenerate();
+    private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
+
+    public DemoMain() {
+        CommandRegistry.autoGenerate().getCommands().forEach((name, command) -> commandMap.put(name, command));
+        if (JShellCommandProvider.isJShellSupported())
+            commandMap.put("jshell", new JShellCommandCreator().create());
+    }
 
     public String getName() {
         return "jct-demo";
@@ -115,7 +126,7 @@ public class DemoMain {
 
             // Create exec
             final SimpleExec exec = new SimpleExec();
-            exec.setCommandRegistry(this.commandRegistry);
+            exec.setCommandRegistry(() -> this.commandMap);
 
             // Create request
             final SimpleExecRequest request = new SimpleExecRequest(System.in,
@@ -138,8 +149,8 @@ public class DemoMain {
             // Create and configure console components
             final SimpleExec exec = new SimpleExec();
             final SimpleShell shell = new SimpleShell();
-            exec.setCommandRegistry(this.commandRegistry);
-            shell.setCommandRegistry(this.commandRegistry);
+            exec.setCommandRegistry(() -> this.commandMap);
+            shell.setCommandRegistry(() -> this.commandMap);
 
             // Start SSH server
             if (ssh) {
@@ -213,7 +224,7 @@ public class DemoMain {
         out.println(String.format(
           "    --help                       Display this usage message"));
         out.println(String.format("Commands:"));
-        this.commandRegistry.getCommands().forEach((name, command) ->
+        this.commandMap.forEach((name, command) ->
           out.println(String.format("    %-28s %s", name, command.getHelpSummary(name))));
     }
 
@@ -252,5 +263,35 @@ public class DemoMain {
 
         // Done
         System.exit(exitValue);
+    }
+
+// JShellCommandCreator
+
+    // This separate class avoids a class resolution error if JDK version < 9
+    private static final class JShellCommandCreator {
+
+        JShellCommand create() {
+            final JShellCommand command = new JShellCommand() {
+
+                // Add startup script to the jshell command line (if found)
+                @Override
+                protected List<String> buildJShellParams(List<String> commandLineParams) {
+                    final List<String> jshellParams = new ArrayList<>();
+                    final File startupFile = new File("startup.jsh");
+                    if (startupFile.exists()) {
+                        jshellParams.add("--startup");
+                        jshellParams.add(startupFile.toString());
+                    }
+                    jshellParams.addAll(super.buildJShellParams(commandLineParams));
+                    return jshellParams;
+                }
+            };
+
+            // This fixes some class path and class loader issues
+            command.enableLocalContextExecution();
+
+            // Done
+            return command;
+        }
     }
 }
