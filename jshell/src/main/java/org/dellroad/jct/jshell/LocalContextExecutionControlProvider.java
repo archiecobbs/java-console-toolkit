@@ -113,6 +113,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
             }
 
             // Pass these URLs to JShell by adding to our "--class-path" flag
+            final String pathSeparator = System.getProperty("path.separator", ":");
             for (URL url : urls) {
                 final URI uri;
                 try {
@@ -127,7 +128,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
                     continue;
                 }
                 if (classPath.length() > 0)
-                    classPath.append(':');
+                    classPath.append(pathSeparator);
                 classPath.append(file.toString());
             }
         }
