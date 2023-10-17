@@ -1,11 +1,11 @@
-This is a simple demonstration for the java-console-toolkit library.
+This is a simple demonstration for ${project.parent.name}.
 
 To run the demo:
 
-    $ java -jar java-console-toolkit-demo-1.0.0.jar
+    $ java -jar ${project.artifactId}-${project.version}.jar
 
 To see various command line options:
 
-    $ java -jar java-console-toolkit-demo-1.0.0.jar --help
+    $ java -jar ${project.artifactId}-${project.version}.jar --help
 
-More info: https://github.com/archiecobbs/java-console-toolkit
+More info: ${project.url}

@@ -28,6 +28,7 @@
         <fileSet>
             <directory>${project.basedir}/src/demo</directory>
             <outputDirectory/>
+            <filtered>true</filtered>
         </fileSet>
 
         <!-- Executable JAR -->
