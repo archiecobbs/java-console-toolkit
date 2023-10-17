@@ -46,13 +46,15 @@
     <properties>
 
         <!-- Basic stuff -->
-        <jct.package.root>org.dellroad.jct</jct.package.root>
+        <java.version>8</java.version>
         <checkstyle.config.location>src/checkstyle/checkstyle.xml</checkstyle.config.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <target.java.version>8</target.java.version>
+
+        <!-- Root package name -->
+        <jct.package.root>org.dellroad.jct</jct.package.root>
 
         <!-- Dependency versions - Libraries -->
-        <dellroad.stuff.version>2.5.9</dellroad.stuff.version>
+        <dellroad-stuff.version>2.5.9</dellroad-stuff.version>
         <guava.version>31.1-jre</guava.version>
         <jline.version>3.23.0</jline.version>
         <log4j.version>2.20.0</log4j.version>
@@ -61,19 +63,19 @@
         <testng.version>7.7.1</testng.version>
 
         <!-- Dependency versions - Plugins -->
-        <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
-        <maven.checkstyle.plugin.version>3.0.0</maven.checkstyle.plugin.version>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-        <maven.enforcer.plugin.version>3.3.0</maven.enforcer.plugin.version>
-        <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
-        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-        <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version><!-- https://stackoverflow.com/a/51099913/263801 -->
-        <maven.site.plugin.version>3.12.1</maven.site.plugin.version>
-        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
-        <maven.surefire.plugin.version>3.1.0</maven.surefire.plugin.version>
-        <properties.maven.plugin.version>1.1.0</properties.maven.plugin.version>
-        <spotbugs.maven.plugin.version>4.7.3.4</spotbugs.maven.plugin.version>
+        <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
+        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
+        <maven-project-info-reports.plugin.version>2.9</maven-project-info-reports.plugin.version><!-- https://stackoverflow.com/a/51099913/263801 -->
+        <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
+        <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
 
     </properties>
 
@@ -107,6 +109,11 @@
             </dependency>
 
             <!-- JLine -->
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jline</groupId>
                 <artifactId>jline-reader</artifactId>
@@ -162,7 +169,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
-                <version>${properties.maven.plugin.version}</version>
+                <version>${properties-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -184,7 +191,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven.enforcer.plugin.version}</version>
+                <version>${maven-enforcer-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-java</id>
@@ -206,7 +213,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven.jar.plugin.version}</version>
+                <version>${maven-jar-plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -223,9 +230,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>${target.java.version}</release>
+                    <release>${java.version}</release>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Xlint:all,-path</arg>
@@ -238,7 +245,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven.source.plugin.version}</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -253,7 +260,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc.plugin.version}</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <notimestamp>true</notimestamp>
                     <validateLinks>true</validateLinks>
@@ -273,7 +280,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <systemPropertyVariables>
                         <deleteTempDirs>true</deleteTempDirs>
@@ -292,7 +299,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven.checkstyle.plugin.version}</version>
+                <version>${maven-checkstyle-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -318,7 +325,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.maven.plugin.version}</version>
+                <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Default</threshold>
@@ -340,7 +347,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven.project.info.reports.plugin.version}</version>
+                <version>${maven-project-info-reports.plugin.version}</version>
                 <!-- https://issues.apache.org/jira/browse/MPIR-370 -->
                 <!--
                     <exclusions>
@@ -361,7 +368,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc.plugin.version}</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <inherited>false</inherited>
                 <configuration>
                     <notimestamp>true</notimestamp>
@@ -380,7 +387,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven.gpg.plugin.version}</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

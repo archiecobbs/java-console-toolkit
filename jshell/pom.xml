@@ -19,7 +19,7 @@
         </site>
     </distributionManagement>
     <properties>
-        <target.java.version>11</target.java.version>
+        <java.version>11</java.version>
         <automatic.module.name>${jct.package.root}.jshell</automatic.module.name>
     </properties>
     <dependencies>
