@@ -68,7 +68,7 @@ import org.dellroad.stuff.java.MemoryClassLoader;
  *      strategy. To include the application class loader, hacky instrospection relying on illegal accesses
  *      is attempted (failures are silently ignored). To ensure these efforts succeed, the following flag
  *      must be added to JVM startup: {@code --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED}.
- *      Note there is also another ugly workarond, which is to write JShell code that only accesses classes
+ *      Note there is also another ugly workaround, which is to write JShell code that only accesses classes
  *      on the application class path via reflection.
  * </ul>
  *
