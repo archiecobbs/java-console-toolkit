@@ -46,11 +46,28 @@ public class SimpleExec extends SimpleCommandSupport implements Exec {
     public ExecSession newExecSession(ExecRequest request, FoundCommand command) throws IOException {
         if (command == null)
             throw new IllegalArgumentException("null command");
-        return new AbstractExecSession(this, request) {
-            @Override
-            protected int doExecute() throws InterruptedException {
-                return SimpleExec.this.execute(this, command);
-            }
-        };
+        return new Session(request, command);
+    }
+
+// Session
+
+    /**
+     * Default {@link ExecSession} implementation used by {@link SimpleExec}.
+     */
+    protected class Session extends AbstractExecSession {
+
+        protected final FoundCommand command;
+
+        protected Session(ExecRequest request, FoundCommand command) throws IOException {
+            super(SimpleExec.this, request);
+            if (command == null)
+                throw new IllegalArgumentException("null command");
+            this.command = command;
+        }
+
+        @Override
+        protected int doExecute() throws InterruptedException {
+            return SimpleExec.this.execute(this, this.command);
+        }
     }
 }

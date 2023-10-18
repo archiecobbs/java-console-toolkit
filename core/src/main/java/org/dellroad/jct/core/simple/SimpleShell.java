@@ -36,7 +36,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             throw new IllegalArgumentException("null request");
 
         // Return new shell session
-        return new SimpleShellSession(request, this.buildLineReader(request));
+        return new Session(request, this.buildLineReader(request));
     }
 
 // Internal Methods
@@ -44,10 +44,24 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
     /**
      * Construct a {@link LineReader} for a new shell session.
      *
+     * <p>
+     * The implementation in {@link SimpleShell} invokes {@link #createLineReaderBuilder}
+     * to create and configure the builder, then just returns {@link LineReaderBuilder#build}.
+     *
      * @param request associated shell request
      * @return new terminal line reader
      */
     protected LineReader buildLineReader(ShellRequest request) {
+        return this.createLineReaderBuilder(request).build();
+    }
+
+    /**
+     * Create and configure a {@link LineReaderBuilder} for a new shell session.
+     *
+     * @param request associated shell request
+     * @return builder for terminal line reader
+     */
+    protected LineReaderBuilder createLineReaderBuilder(ShellRequest request) {
         return LineReaderBuilder.builder()
             .terminal(request.getTerminal())
             .completer(new SimpleCompleter())
@@ -60,8 +74,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             .option(LineReader.Option.INSERT_BRACKET, true)
             .option(LineReader.Option.EMPTY_WORD_OPTIONS, false)
             .option(LineReader.Option.USE_FORWARD_SLASH, true)
-            .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
-            .build();
+            .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true);
     }
 
     protected String getGreeting() {
@@ -78,6 +91,9 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
 
 // SimpleCompleter
 
+    /**
+     * A simple {@link Completer} for command names.
+     */
     protected class SimpleCompleter implements Completer {
 
         @Override
@@ -93,14 +109,19 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
         }
     }
 
-// SimpleShellSession
+// Session
 
-    private class SimpleShellSession extends AbstractShellSession {
+    /**
+     * Default {@link ShellSession} implementation used by {@link SimpleShell}.
+     */
+    protected class Session extends AbstractShellSession {
 
-        private final LineReader reader;
+        protected final LineReader reader;
 
-        SimpleShellSession(ShellRequest request, LineReader reader) {
+        protected Session(ShellRequest request, LineReader reader) throws IOException {
             super(SimpleShell.this, request);
+            if (reader == null)
+                throw new IllegalArgumentException("null reader");
             this.reader = reader;
         }
 
