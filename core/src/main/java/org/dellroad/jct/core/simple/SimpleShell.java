@@ -174,7 +174,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
 
                 // Execute command
                 try {
-                    command.execute(this);
+                    SimpleShell.this.execute(this, command);
                 } catch (InterruptedException e) {
                     this.reader.getTerminal().flush();          // push out the "^C" that the terminal inserts
                     this.getOutputStream().println();

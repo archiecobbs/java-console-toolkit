@@ -160,6 +160,31 @@ public class SimpleCommandSupport {
         return new FoundCommand(command, name, params);
     }
 
+    /**
+     * Execute the given command in the context of the given session.
+     *
+     * <p>
+     * The implementation in {@link SimpleCommandSupport} just invokes {@link FoundCommand#execute}.
+     * Subclasses can override this method to intercept/wrap individual command execution.
+     *
+     * @param session execution context
+     * @param command command to execute
+     * @return command return value
+     * @throws IllegalArgumentException if either parameter is null
+     * @throws InterruptedException if the current thread is interrupted
+     */
+    protected int execute(ConsoleSession<?, ?> session, FoundCommand command) throws InterruptedException {
+
+        // Validation
+        if (session == null)
+            throw new IllegalArgumentException("null session");
+        if (command == null)
+            throw new IllegalArgumentException("null command");
+
+        // Execute
+        return command.execute(session);
+    }
+
 // FoundCommand
 
     /**

@@ -49,7 +49,7 @@ public class SimpleExec extends SimpleCommandSupport implements Exec {
         return new AbstractExecSession(this, request) {
             @Override
             protected int doExecute() throws InterruptedException {
-                return command.execute(this);
+                return SimpleExec.this.execute(this, command);
             }
         };
     }
