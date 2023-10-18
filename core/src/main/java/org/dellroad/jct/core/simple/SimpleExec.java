@@ -35,6 +35,8 @@ public class SimpleExec extends SimpleCommandSupport implements Exec {
         return this.newExecSession(request, command);
     }
 
+// Public Methods
+
     /**
      * Alternate ssession creator for when the command line is already parsed and a command is already identified.
      *
@@ -42,11 +44,10 @@ public class SimpleExec extends SimpleCommandSupport implements Exec {
      * @param command command to execute
      * @return new session
      * @throws IOException if an I/O error occurs
+     * @throws IllegalArgumentException if any parameter is null
      */
     public ExecSession newExecSession(ExecRequest request, FoundCommand command) throws IOException {
-        if (command == null)
-            throw new IllegalArgumentException("null command");
-        return new Session(request, command);
+        return new Session(this, request, command);
     }
 
 // Session
@@ -54,20 +55,48 @@ public class SimpleExec extends SimpleCommandSupport implements Exec {
     /**
      * Default {@link ExecSession} implementation used by {@link SimpleExec}.
      */
-    protected class Session extends AbstractExecSession {
+    public static class Session extends AbstractExecSession {
 
         protected final FoundCommand command;
 
-        protected Session(ExecRequest request, FoundCommand command) throws IOException {
-            super(SimpleExec.this, request);
+    // Constructor
+
+        /**
+         * Constructor.
+         *
+         * @param exec session owner
+         * @param request command execution request
+         * @param command the command to execute
+         * @throws IOException if an I/O error occurs
+         * @throws IllegalArgumentException if any parameter is null
+         */
+        public Session(SimpleExec exec, ExecRequest request, FoundCommand command) throws IOException {
+            super(exec, request);
             if (command == null)
                 throw new IllegalArgumentException("null command");
             this.command = command;
         }
 
+    // AbstractConsoleSession
+
+        @Override
+        public SimpleExec getOwner() {
+            return (SimpleExec)super.getOwner();
+        }
+
+        /**
+         * Execute this instance's {@link #command} in the context of this session.
+         *
+         * <p>
+         * The implementation in {@link Session} just invokes {@link FoundCommand#execute}.
+         * Subclasses can override this method to intercept/wrap individual command execution.
+         *
+         * @return command return value
+         * @throws InterruptedException if the current thread is interrupted
+         */
         @Override
         protected int doExecute() throws InterruptedException {
-            return SimpleExec.this.execute(this, this.command);
+            return this.command.execute(this);
         }
     }
 }

@@ -7,6 +7,7 @@ package org.dellroad.jct.core.simple;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.dellroad.jct.core.AbstractShellSession;
@@ -36,7 +37,49 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             throw new IllegalArgumentException("null request");
 
         // Return new shell session
-        return new Session(request, this.buildLineReader(request));
+        return this.newExecSession(request, this.buildLineReader(request));
+    }
+
+// Public Methods
+
+    /**
+     * Alternate ssession creator for when a {@link LineReader} is already constructed.
+     *
+     * @param request session request
+     * @param reader console line reader
+     * @return new session
+     * @throws IOException if an I/O error occurs
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public ShellSession newExecSession(ShellRequest request, LineReader reader) throws IOException {
+        return new Session(this, request, reader);
+    }
+
+    /**
+     * Get the welcome greeting.
+     *
+     * @return welcome greeting, or null for none
+     */
+    public String getGreeting() {
+        return "Welcome to " + this.getClass().getName();
+    }
+
+    /**
+     * Get the normal prompt.
+     *
+     * @return the normal prompt
+     */
+    public String getNormalPrompt() {
+        return "jct> ";
+    }
+
+    /**
+     * Get the continuation line prompt.
+     *
+     * @return the continuation line prompt
+     */
+    public String getContinuationPrompt() {
+        return "...> ";
     }
 
 // Internal Methods
@@ -77,18 +120,6 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true);
     }
 
-    protected String getGreeting() {
-        return "Welcome to " + this.getClass().getName();
-    }
-
-    protected String getNormalPrompt() {
-        return "jct> ";
-    }
-
-    protected String getContinuationPrompt() {
-        return "...> ";
-    }
-
 // SimpleCompleter
 
     /**
@@ -114,22 +145,41 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
     /**
      * Default {@link ShellSession} implementation used by {@link SimpleShell}.
      */
-    protected class Session extends AbstractShellSession {
+    public static class Session extends AbstractShellSession {
 
         protected final LineReader reader;
 
-        protected Session(ShellRequest request, LineReader reader) throws IOException {
-            super(SimpleShell.this, request);
+    // Constructor
+
+        /**
+         * Constructor.
+         *
+         * @param shell session owner
+         * @param request shell execution request
+         * @param reader console line reader
+         * @throws IOException if an I/O error occurs
+         * @throws IllegalArgumentException if any parameter is null
+         */
+        public Session(SimpleShell shell, ShellRequest request, LineReader reader) throws IOException {
+            super(shell, request);
             if (reader == null)
                 throw new IllegalArgumentException("null reader");
             this.reader = reader;
         }
 
+    // AbstractConsoleSession
+
+        @Override
+        public SimpleShell getOwner() {
+            return (SimpleShell)super.getOwner();
+        }
+
         @Override
         protected int doExecute() throws InterruptedException {
 
-            // Send greeting
-            this.getOutputStream().println(SimpleShell.this.getGreeting());
+            // Send greeting, if any
+            Optional.ofNullable(this.getGreeting())
+              .ifPresent(this.getOutputStream()::println);
 
             // Run command loop
             try {
@@ -143,6 +193,44 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             return this.getExitValue();
         }
 
+        /**
+         * Get the welcome greeting.
+         *
+         * <p>
+         * The implementation in {@link Session} delegates to {@link SimpleShell#getGreeting}.
+         *
+         * @return welcome greeting, or null for none
+         */
+        public String getGreeting() {
+            return this.getOwner().getGreeting();
+        }
+
+        /**
+         * Get the normal prompt.
+         *
+         * <p>
+         * The implementation in {@link Session} delegates to {@link SimpleShell#getNormalPrompt}.
+         *
+         * @return the normal prompt
+         */
+        public String getNormalPrompt() {
+            return this.getOwner().getNormalPrompt();
+        }
+
+        /**
+         * Get the continuation line prompt.
+         *
+         * <p>
+         * The implementation in {@link Session} delegates to {@link SimpleShell#getContinuationPrompt}.
+         *
+         * @return the continuation line prompt
+         */
+        public String getContinuationPrompt() {
+            return this.getOwner().getContinuationPrompt();
+        }
+
+    // Internal Methods
+
         protected void commandLoop() {
         mainLoop:
             while (this.exitValue == null) {
@@ -154,7 +242,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
 
                     // First line or continuation line?
                     final boolean firstLine = buf.length() == 0;
-                    final String prompt = firstLine ? SimpleShell.this.getNormalPrompt() : SimpleShell.this.getContinuationPrompt();
+                    final String prompt = firstLine ? this.getNormalPrompt() : this.getContinuationPrompt();
 
                     // Read the next single line of input
                     String line;
@@ -173,7 +261,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
 
                     // Parse entire (multi-line) command
                     try {
-                        commandLine = SimpleShell.this.commandLineParser.parseCommandLine(buf.toString());
+                        commandLine = this.getOwner().commandLineParser.parseCommandLine(buf.toString());
                     } catch (CommandLineParser.SyntaxException e) {
                         this.getErrorStream().println(String.format("%s: %s", "Error", e.getMessage()));
                         continue;
@@ -189,13 +277,13 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
                     continue;
 
                 // Find command
-                final FoundCommand command = SimpleShell.this.findCommand(this.getErrorStream(), commandLine);
+                final FoundCommand command = this.getOwner().findCommand(this.getErrorStream(), commandLine);
                 if (command == null)
                     continue;
 
                 // Execute command
                 try {
-                    SimpleShell.this.execute(this, command);
+                    this.execute(command);
                 } catch (InterruptedException e) {
                     this.reader.getTerminal().flush();          // push out the "^C" that the terminal inserts
                     this.getOutputStream().println();
@@ -203,6 +291,24 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
                     e.printStackTrace(out);
                 }
             }
+        }
+
+        /**
+         * Execute the given command in the context of this session.
+         *
+         * <p>
+         * The implementation in {@link Session} just invokes {@link FoundCommand#execute}.
+         * Subclasses can override this method to intercept/wrap individual command execution.
+         *
+         * @param command command to execute
+         * @return command return value
+         * @throws InterruptedException if the current thread is interrupted
+         * @throws IllegalArgumentException if {@code command} is null
+         */
+        protected int execute(FoundCommand command) throws InterruptedException {
+            if (command == null)
+                throw new IllegalArgumentException("null command");
+            return command.execute(this);
         }
     }
 }
