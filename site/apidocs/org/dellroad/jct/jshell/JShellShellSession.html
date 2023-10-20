@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -96,7 +96,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -151,6 +151,16 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <div class="block">A <a href="../core/ShellSession.html" title="interface in org.dellroad.jct.core"><code>ShellSession</code></a> that builds and executes a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/JShell.html?is-external=true" title="class or interface in jdk.jshell" class="externalLink"><code>JShell</code></a> instance.
 
  <p>
+ The associated <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/JShell.html?is-external=true" title="class or interface in jdk.jshell" class="externalLink"><code>JShell</code></a> instance can be customized in two ways:
+ <ul>
+  <li>Override <a href="#createBuilder()"><code>createBuilder()</code></a> to customize the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/tool/JavaShellToolBuilder.html?is-external=true" title="class or interface in jdk.jshell.tool" class="externalLink"><code>JavaShellToolBuilder</code></a>
+      used to create the JShell.
+  <li>Override <a href="#modifyJShellParams(java.util.List)"><code>modifyJShellParams()</code></a> to customize the flags and parameters
+      passed to JShell itself (these are the same as accepted by the <code>jshell(1)</code> command line tool).
+      By default, the parameters passed are the the parameters given on the command line.
+ </ul>
+
+ <p>
  During execution, instances make themselves available to the current thread via <a href="#getCurrent()"><code>getCurrent()</code></a>.</div>
 </li>
 </ul>
@@ -165,6 +175,19 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <!--   -->
 </a>
 <h3>Field Summary</h3>
+<table class="memberSummary">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#localContextClassLoader">localContextClassLoader</a></span></code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</table>
 <ul class="blockList">
 <li class="blockList"><a id="fields.inherited.from.class.org.dellroad.jct.core.AbstractShellSession">
 <!--   -->
@@ -255,6 +278,22 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <div class="block">Get the owner, i.e., the console component that created this session.</div>
 </td>
 </tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#modifyJShellParams(java.util.List)">modifyJShellParams</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;params)</code></th>
+<td class="colLast">
+<div class="block">Generate a list of command line flags and parameters to be passed to the JShell tool,
+ given the arguments given on the shell command line for this command.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLocalContextClassLoader(java.lang.ClassLoader)">setLocalContextClassLoader</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a>&nbsp;loader)</code></th>
+<td class="colLast">
+<div class="block">Configure a class loader to use with <a href="LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell"><code>LocalContextExecutionControlProvider</code></a>
+ for local execution.</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.org.dellroad.jct.core.AbstractShellSession">
@@ -300,6 +339,25 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<section>
+<ul class="blockList">
+<li class="blockList"><a id="field.detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a id="localContextClassLoader">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>localContextClassLoader</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a> localContextClassLoader</pre>
+</li>
+</ul>
+</li>
+</ul>
+</section>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <section>
 <ul class="blockList">
@@ -346,6 +404,23 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>session associated with the current thread, or null if not found</dd>
+</dl>
+</li>
+</ul>
+<a id="setLocalContextClassLoader(java.lang.ClassLoader)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setLocalContextClassLoader</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setLocalContextClassLoader&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ClassLoader.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassLoader</a>&nbsp;loader)</pre>
+<div class="block">Configure a class loader to use with <a href="LocalContextExecutionControlProvider.html" title="class in org.dellroad.jct.jshell"><code>LocalContextExecutionControlProvider</code></a>
+ for local execution.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>loader</code> - class loader, or null for none</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#modifyJShellParams(java.util.List)"><code>modifyJShellParams(java.util.List&lt;java.lang.String&gt;)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -413,7 +488,7 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <a id="createBuilder()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>createBuilder</h4>
 <pre class="methodSignature">protected&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/jdk.jshell/jdk/jshell/tool/JavaShellToolBuilder.html?is-external=true" title="class or interface in jdk.jshell.tool" class="externalLink">JavaShellToolBuilder</a>&nbsp;createBuilder()</pre>
@@ -421,6 +496,38 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>new builder</dd>
+</dl>
+</li>
+</ul>
+<a id="modifyJShellParams(java.util.List)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>modifyJShellParams</h4>
+<pre class="methodSignature">protected&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;modifyJShellParams&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;params)</pre>
+<div class="block">Generate a list of command line flags and parameters to be passed to the JShell tool,
+ given the arguments given on the shell command line for this command.
+
+ <p>
+ If this method is overridden to add or change this command's flags and/or parameters,
+ then the full constructor taking customized help detail should be used to describe the
+ new usage.
+
+ <p>
+ The implementation in <a href="JShellShellSession.html" title="class in org.dellroad.jct.jshell"><code>JShellShellSession</code></a> just returns the list unmodified unless
+ a <a href="#setLocalContextClassLoader(java.lang.ClassLoader)">local context class loader</a> has been configured,
+ in which case the list is copied, modified by <a href="LocalContextExecutionControlProvider.html#modifyJShellFlags(java.lang.ClassLoader,java.util.List)"><code>LocalContextExecutionControlProvider.modifyJShellFlags(java.lang.ClassLoader, java.util.List&lt;java.lang.String&gt;)</code></a>,
+ and then returned.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>params</code> - parameters given to the shell command line</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>flags and parameters for JShell</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - if <code>commandLineParams</code> is null</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#setLocalContextClassLoader(java.lang.ClassLoader)"><code>setLocalContextClassLoader(java.lang.ClassLoader)</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -483,7 +590,7 @@ extends <a href="../core/AbstractShellSession.html" title="class in org.dellroad
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
