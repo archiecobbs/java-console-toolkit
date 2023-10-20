@@ -32,4 +32,53 @@
             <artifactId>dellroad-stuff-main</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <executions>
+
+                    <!-- Compile everything except Bundle.java using JDK 9 -->
+                    <execution>
+                        <id>default-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>9</release>
+                            <showWarnings>true</showWarnings>
+                            <compilerArgs>
+                                <arg>-Xlint:all,-path</arg>
+                                <arg>-Werror</arg>
+                            </compilerArgs>
+                            <excludes>
+                                <exclude>**/command/Bundle.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+
+                    <!-- Compile Bundle.java using JDK 8 -->
+                    <execution>
+                        <id>bundle-only</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>${java.version}</release>
+                            <showWarnings>true</showWarnings>
+                            <compilerArgs>
+                                <arg>-Xlint:all,-path</arg>
+                                <arg>-Werror</arg>
+                            </compilerArgs>
+                            <includes>
+                                <include>**/command/Bundle.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -131,8 +131,8 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
         public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
             if (line.wordIndex() != 0)
                 return;
-            SimpleShell.this.commandRegistry.getCommands().forEach(
-                (name, command) -> candidates.add(this.toCandidate(name, command)));
+            SimpleShell.this.buildCommandMap().forEach(
+              (name, command) -> candidates.add(this.toCandidate(name, command)));
         }
 
         protected Candidate toCandidate(String name, SimpleCommand command) {

@@ -7,6 +7,7 @@ package org.dellroad.jct.jshell;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -123,7 +124,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
                     final Object ucp = field.get(loader);
                     final Method method = ucp.getClass().getMethod("getURLs");
                     urls = (URL[])method.invoke(ucp);
-                } catch (ReflectiveOperationException | SecurityException e) {
+                } catch (ReflectiveOperationException | SecurityException | InaccessibleObjectException e) {
                     continue;
                 }
             }

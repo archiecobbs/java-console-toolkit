@@ -6,9 +6,11 @@
 package org.dellroad.jct.core.simple;
 
 import java.io.PrintStream;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.dellroad.jct.core.ExecRequest;
@@ -19,7 +21,7 @@ import org.dellroad.jct.core.ExecRequest;
 public class SimpleCommandSupport {
 
     protected CommandLineParser commandLineParser = new SimpleCommandLineParser();
-    protected CommandRegistry commandRegistry = Collections::emptySortedMap;
+    protected List<CommandBundle> commandBundles = new ArrayList<>();
 
     /**
      * Get the configured command line parser.
@@ -46,30 +48,31 @@ public class SimpleCommandSupport {
     }
 
     /**
-     * Get the configured command registry.
+     * Get the list of command bundles.
      *
-     * @return command registry, never null
+     * @return command bundles, never null
      */
-    public CommandRegistry getCommandRegistry() {
-        return this.commandRegistry;
-    }
-
-    /**
-     * Configure the registry of available commands.
-     *
-     * @param commandRegistry registry of commands
-     * @throws IllegalArgumentException if {@code commandRegistry} is null
-     */
-    public void setCommandRegistry(CommandRegistry commandRegistry) {
-        if (commandRegistry == null)
-            throw new IllegalArgumentException("null commandRegistry");
-        this.commandRegistry = commandRegistry;
+    public List<CommandBundle> getCommandBundles() {
+        return this.commandBundles;
     }
 
 // Subclass Methods
 
     /**
-     * Find the command in the registry corresponding to the given request.
+     * Build a combined command map, where command names in earlier bundles hide later ones.
+     *
+     * @return map from command name to command
+     */
+    public SortedMap<String, SimpleCommand> buildCommandMap() {
+        final TreeMap<String, SimpleCommand> map = new TreeMap<>();
+        int i = this.commandBundles.size();
+        while (i-- > 0)
+            map.putAll(this.commandBundles.get(i));
+        return map;
+    }
+
+    /**
+     * Find the command in the bundle corresponding to the given request.
      *
      * <p>
      * If an error occurs, an error message is printed to {@code errout} and null is returned.
@@ -86,7 +89,7 @@ public class SimpleCommandSupport {
     }
 
     /**
-     * Find the command in the registry corresponding to the given command string, which will be parsed.
+     * Find the command in the bundle corresponding to the given command string, which will be parsed.
      *
      * <p>
      * If an error occurs, an error message is printed to {@code errout} and null is returned.
@@ -103,7 +106,7 @@ public class SimpleCommandSupport {
     }
 
     /**
-     * Find the command in the registry corresponding to the given command list.
+     * Find the command in the bundle corresponding to the given command list.
      *
      * <p>
      * If an error occurs, an error message is printed to {@code errout} and null is returned.
@@ -145,11 +148,15 @@ public class SimpleCommandSupport {
 
         // Find the corresponding command
         final String name = commandList.get(0);
-        if (this.commandRegistry == null) {
+        if (this.commandBundles.isEmpty()) {
             errout.println(String.format("%s: no commands are configured", "Error"));
             return null;
         }
-        final SimpleCommand command = this.commandRegistry.getCommands().get(name);
+        final SimpleCommand command = this.commandBundles.stream()
+          .map(bundle -> bundle.get(name))
+          .filter(Objects::nonNull)
+          .findFirst()
+          .orElse(null);
         if (command == null) {
             errout.println(String.format("%s: command \"%s\" not found", "Error", name));
             return null;

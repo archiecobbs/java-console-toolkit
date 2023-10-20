@@ -1,4 +1,4 @@
-# java-console-toolkit
+# Java Console Toolkit
 A toolkit for adding a command line interface (CLI) console to a Java application.
 
 ### Why?
@@ -79,7 +79,7 @@ These concepts are realized via the following Java classes:
 * [`Exec`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/Exec.html) - A thing that executes commands
 * [`Shell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/Shell.html) - A thing that implements shell functionality
 * [`SimpleCommand`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleCommand.html) - A simple command abstraction
-* [`CommandRegistry`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/CommandRegistry.html) - A registry of commands
+* [`CommandBundle`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/CommandBundle.html) - A registry of commands
 * [`SimpleExec`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleExec.html) - An `Exec` that executes commands out of a `CommandRegistry`
 * [`SimpleShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/SimpleShell.html) - A `Shell` that exposes the commands in a `CommandRegistry`
 * [`CommandLineParser`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/core/simple/CommandLineParser.html) - Used by `SimpleShell` to parse command lines
@@ -88,7 +88,7 @@ Additional "glue":
 
 * [`SimpleConsoleSshServer`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/ssh/simple/SimpleConsoleSshServer.html) - SSH server configured with an `Exec` and/or `Shell`
 * [`JShellShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/JShellShell.html) - A `Shell` wrapper around JShell.
-* [`LocalContextExecutionControlProvider`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/LocalContextExecutionControlProvider.html) - Workaround for JShell local execution class path/loading issues
+* [`LocalContextExecutionControlProvider`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/command/LocalContextExecutionControlProvider.html) - Workaround for JShell local execution class path/loading issues
 
 Note: `JShell` support is only available on JDK 9 or later.
 
@@ -97,26 +97,35 @@ Note: `JShell` support is only available on JDK 9 or later.
 The **demo** module allows you to test out the current JCT features (and see some sample code):
 
 ```
-$ java -jar java-console-toolkit-demo-1.0.1.jar --help
+$ java -jar java-console-toolkit-demo-1.0.2.jar --help
 Usage:
     jct-demo [options] [command ...]
+
 Options:
+    --no-console                 Don't start command line console
     --ssh                        Enable SSH server
-    --ssh-auth-keys-file path    Specify SSH authorized users file (default ~/.ssh/authorized_keys)
+    --ssh-auth-keys-file path    Specify SSH authorized users file (default /Users/archie/.ssh/authorized_keys)
     --ssh-host-key-file path     Specify SSH host key file (default hostkey)
     --ssh-listen-port port       Specify SSH server TCP port (default 9191)
     --help                       Display this usage message
+
 Commands:
-    date                         Display the current time and date.
-    echo                         Echoes command line arguments.
-    exit                         Exit the shell.
-    help                         Displays information about available commands.
-    jshell                       Fire up a JShell console.
-    quit                         Exit the shell.
-    sleep                        Sleep for a while.
-$ java -jar java-console-toolkit-demo-1.0.1.jar date
-Sat Aug 12 13:30:11 CDT 2023
-$ java -jar java-console-toolkit-demo-1.0.1.jar
+=== Java Console Toolkit built-in simple commands
+
+  date   Display the current time and date.
+  echo   Echoes command line arguments.
+  exit   Exit the shell.
+  help   Displays information about available commands.
+  quit   Exit the shell.
+  sleep  Sleep for a while.
+
+=== Java Console Toolkit JShell commands
+
+  jshell  Fire up a JShell console.
+
+$ java -jar java-console-toolkit-demo-1.0.2.jar date
+Fri Oct 20 15:38:15 CDT 2023
+$ java -jar java-console-toolkit-demo-1.0.2.jar
 Welcome to org.dellroad.jct.core.simple.SimpleShell
 jct> help
   date    Display the current time and date.

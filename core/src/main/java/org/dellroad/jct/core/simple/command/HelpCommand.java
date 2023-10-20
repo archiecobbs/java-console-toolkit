@@ -6,11 +6,13 @@
 package org.dellroad.jct.core.simple.command;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Objects;
 
 import org.dellroad.jct.core.ConsoleSession;
 import org.dellroad.jct.core.simple.AbstractSimpleCommand;
+import org.dellroad.jct.core.simple.CommandBundle;
 import org.dellroad.jct.core.simple.SimpleCommand;
 import org.dellroad.jct.core.simple.SimpleCommandSupport;
 
@@ -29,6 +31,45 @@ public class HelpCommand extends AbstractSimpleCommand {
             + "\nWhen used with a specific command, displays detailed information about that command.");
     }
 
+    /**
+     * Pretty-print command names and descriptions.
+     *
+     * @param out where to print
+     * @param bundles command bundles
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static void listCommands(PrintStream out, Collection<? extends CommandBundle> bundles) {
+        if (out == null)
+            throw new IllegalArgumentException("null out");
+        if (bundles == null)
+            throw new IllegalArgumentException("null bundles");
+        bundles.stream().forEach(bundle -> {
+
+            // Skip empty bundles
+            if (bundle.isEmpty())
+                return;
+
+            // Show bundle description
+            out.println(String.format("=== %s", bundle.getDescription()));
+            out.println();
+
+            // Calculate maximum command name length
+            final int maxNameLen = bundle.keySet().stream()
+              .mapToInt(String::length)
+              .max()
+              .orElse(0);
+
+            // Show commands
+            final String format = String.format("  %%-%ds  %%s", maxNameLen);
+            bundle.entrySet().stream()
+              .map(entry -> String.format(format, entry.getKey(), entry.getValue().getHelpSummary(entry.getKey())))
+              .forEach(out::println);
+
+            // Blank line
+            out.println();
+        });
+    }
+
     @Override
     public int execute(ConsoleSession<?, ?> session, String name, List<String> args) throws InterruptedException {
 
@@ -44,21 +85,21 @@ public class HelpCommand extends AbstractSimpleCommand {
 
         // Check command line
         final PrintStream out = session.getOutputStream();
-        final SortedMap<String, SimpleCommand> commandMap = owner.getCommandRegistry().getCommands();
+        final List<CommandBundle> commandBundles = owner.getCommandBundles();
         switch (args.size()) {
         case 0:
-
-            // List all commands
-            final int maxNameLen = commandMap.keySet().stream().mapToInt(String::length).max().orElse(0);
-            final String format = String.format("  %%-%ds  %%s", maxNameLen);
-            commandMap.forEach((commandName, command) ->
-              out.println(String.format(format, commandName, command.getHelpSummary(commandName))));
+            out.println();
+            HelpCommand.listCommands(out, commandBundles);
             break;
         case 1:
 
             // Find command
             final String commandName = args.get(0);
-            final SimpleCommand command = commandMap.get(commandName);
+            final SimpleCommand command = commandBundles.stream()
+              .map(bundle -> bundle.get(commandName))
+              .filter(Objects::nonNull)
+              .findFirst()
+              .orElse(null);
             if (command == null) {
                 out.println(String.format("%s: command not found", commandName));
                 return 1;

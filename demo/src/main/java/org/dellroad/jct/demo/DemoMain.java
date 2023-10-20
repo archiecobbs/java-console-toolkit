@@ -11,23 +11,27 @@ import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.dellroad.jct.core.ConsoleSession;
+import org.dellroad.jct.core.ExecSession;
+import org.dellroad.jct.core.ShellRequest;
 import org.dellroad.jct.core.ShellSession;
-import org.dellroad.jct.core.simple.CommandRegistry;
-import org.dellroad.jct.core.simple.SimpleCommand;
+import org.dellroad.jct.core.simple.CommandBundle;
 import org.dellroad.jct.core.simple.SimpleCommandSupport;
 import org.dellroad.jct.core.simple.SimpleExec;
 import org.dellroad.jct.core.simple.SimpleExecRequest;
 import org.dellroad.jct.core.simple.SimpleShell;
 import org.dellroad.jct.core.simple.SimpleShellRequest;
+import org.dellroad.jct.core.simple.command.HelpCommand;
 import org.dellroad.jct.core.util.ConsoleUtil;
-import org.dellroad.jct.jshell.JShellCommand;
-import org.dellroad.jct.jshell.JShellCommandProvider;
+import org.dellroad.jct.jshell.JShellShell;
+import org.dellroad.jct.jshell.JShellShellSession;
+import org.dellroad.jct.jshell.command.JShellCommand;
 import org.dellroad.jct.ssh.simple.SimpleConsoleSshServer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -39,12 +43,11 @@ public class DemoMain {
 
     private static DemoMain instance;
 
-    private final TreeMap<String, SimpleCommand> commandMap = new TreeMap<>();
+    private final List<CommandBundle> commandBundles = CommandBundle.scanAndGenerate().collect(Collectors.toList());
 
     public DemoMain() {
-        CommandRegistry.autoGenerate().getCommands().forEach((name, command) -> commandMap.put(name, command));
-        if (JShellCommandProvider.isJShellSupported())
-            commandMap.put("jshell", new JShellCommandCreator().create());
+        // Replace standard "jshell" command (if present) with our custom version
+        commandBundles.forEach(bundle -> bundle.computeIfPresent("jshell", (name, value) -> new DemoJShellCommand()));
     }
 
     public String getName() {
@@ -63,11 +66,14 @@ public class DemoMain {
         int sshListenPort = this.getDefaultListenPort();
         final ArrayDeque<String> params = new ArrayDeque<>(Arrays.asList(args));
         boolean ssh = false;
-        boolean syscon = false;
+        boolean console = true;
     argLoop:
         while (!params.isEmpty() && params.peekFirst().startsWith("-")) {
             String option = params.removeFirst();
             switch (option) {
+            case "--no-console":
+                console = false;
+                break;
             case "--ssh":
                 ssh = true;
                 break;
@@ -113,6 +119,12 @@ public class DemoMain {
             }
         }
 
+        // Create and configure console components
+        final SimpleExec exec = new SimpleExec();
+        final SimpleShell shell = new SimpleShell();
+        exec.getCommandBundles().addAll(this.commandBundles);
+        shell.getCommandBundles().addAll(this.commandBundles);
+
         // Interactive shell or execute command directly?
         final ConsoleSession<?, ?> session;
         if (!params.isEmpty()) {
@@ -124,33 +136,9 @@ public class DemoMain {
                 return 1;
             }
 
-            // Create exec
-            final SimpleExec exec = new SimpleExec();
-            exec.setCommandRegistry(() -> this.commandMap);
-
-            // Create request
-            final SimpleExecRequest request = new SimpleExecRequest(System.in,
-              System.out, System.err, System.getenv(), new ArrayList<>(params));
-
-            // Find command
-            final SimpleCommandSupport.FoundCommand foundCommand = exec.findCommand(System.err, request);
-            if (foundCommand == null)
-                return 1;
-
             // Create exec session
-            try {
-                session = exec.newExecSession(request, foundCommand);
-            } catch (IOException e) {
-                System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "exec", e));
-                return 1;
-            }
+            session = this.createExecSession(exec, params);
         } else {
-
-            // Create and configure console components
-            final SimpleExec exec = new SimpleExec();
-            final SimpleShell shell = new SimpleShell();
-            exec.setCommandRegistry(() -> this.commandMap);
-            shell.setCommandRegistry(() -> this.commandMap);
 
             // Start SSH server
             if (ssh) {
@@ -172,35 +160,17 @@ public class DemoMain {
                 System.err.println(String.format("%s: started SSH server on port %d", this.getName(), sshListenPort));
             }
 
-            // Create system terminal
-            final AtomicReference<ShellSession> shellSessionRef = new AtomicReference<>();
-            final Terminal terminal;
-            try {
-                terminal = TerminalBuilder.builder()
-                  .name("JCT")
-                  .system(true)
-                  .nativeSignals(true)
-                  .signalHandler(ConsoleUtil.interrruptHandler(shellSessionRef::get, Terminal.SignalHandler.SIG_DFL))
-                  .build();
-            } catch (IOException e) {
-                System.err.println(String.format("%s: error creating system terminal: %s", this.getName(), e));
-                return 1;
-            }
-
-            // Create shell session
-            final ShellSession shellSession;
-            try {
-                shellSession = shell.newShellSession(
-                  new SimpleShellRequest(terminal, Collections.emptyList(), System.getenv()));
-            } catch (IOException e) {
-                System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "shell", e));
-                return 1;
-            }
-            shellSessionRef.set(shellSession);
-            session = shellSession;
+            // Start console, or else just sleep
+            session = console ?
+              this.createShellSession(shell) :
+              this.createExecSession(exec, Arrays.asList("sleep", "99999999"));
         }
 
-        // Execute session
+        // Check for session creation failure
+        if (session == null)
+            return 1;
+
+        // Execute session, if any, otherwise just hang
         try {
             return session.execute();
         } catch (InterruptedException e) {
@@ -209,10 +179,63 @@ public class DemoMain {
         }
     }
 
+    private ExecSession createExecSession(SimpleExec exec, Collection<String> params) {
+
+        // Create request
+        final SimpleExecRequest request = new SimpleExecRequest(System.in,
+          System.out, System.err, System.getenv(), new ArrayList<>(params));
+
+        // Find command
+        final SimpleCommandSupport.FoundCommand foundCommand = exec.findCommand(System.err, request);
+        if (foundCommand == null)
+            return null;
+
+        // Create exec session
+        try {
+            return exec.newExecSession(request, foundCommand);
+        } catch (IOException e) {
+            System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "exec", e));
+            return null;
+        }
+    }
+
+    private ShellSession createShellSession(SimpleShell shell) {
+
+        // Create system terminal
+        final AtomicReference<ShellSession> shellSessionRef = new AtomicReference<>();
+        final Terminal terminal;
+        try {
+            terminal = TerminalBuilder.builder()
+              .name("JCT")
+              .system(true)
+              .nativeSignals(true)
+              .signalHandler(ConsoleUtil.interrruptHandler(shellSessionRef::get, Terminal.SignalHandler.SIG_DFL))
+              .build();
+        } catch (IOException e) {
+            System.err.println(String.format("%s: error creating system terminal: %s", this.getName(), e));
+            return null;
+        }
+
+        // Create shell session
+        final ShellSession shellSession;
+        try {
+            shellSession = shell.newShellSession(
+              new SimpleShellRequest(terminal, Collections.emptyList(), System.getenv()));
+        } catch (IOException e) {
+            System.err.println(String.format("%s: error creating %s session: %s", this.getName(), "shell", e));
+            return null;
+        }
+        shellSessionRef.set(shellSession);
+        return shellSession;
+    }
+
     public void usage(PrintStream out) {
         out.println(String.format("Usage:"));
         out.println(String.format("    %s [options] [command ...]", this.getName()));
+        out.println();
         out.println(String.format("Options:"));
+        out.println(String.format(
+          "    --no-console                 Don't start command line console"));
         out.println(String.format(
           "    --ssh                        Enable SSH server"));
         out.println(String.format(
@@ -223,9 +246,9 @@ public class DemoMain {
           "    --ssh-listen-port port       Specify SSH server TCP port (default %d)", this.getDefaultListenPort()));
         out.println(String.format(
           "    --help                       Display this usage message"));
+        out.println();
         out.println(String.format("Commands:"));
-        this.commandMap.forEach((name, command) ->
-          out.println(String.format("    %-28s %s", name, command.getHelpSummary(name))));
+        HelpCommand.listCommands(out, this.commandBundles);
     }
 
     public File getDefaultAuthKeysFile() {
@@ -265,33 +288,33 @@ public class DemoMain {
         System.exit(exitValue);
     }
 
-// JShellCommandCreator
+// DemoJShellCommand
 
-    // This separate class avoids a class resolution error if JDK version < 9
-    private static final class JShellCommandCreator {
-
-        JShellCommand create() {
-            final JShellCommand command = new JShellCommand() {
-
-                // Add startup script to the jshell command line (if found)
+    private static class DemoJShellCommand extends JShellCommand {
+        DemoJShellCommand() {
+            super(new JShellShell() {
                 @Override
-                protected List<String> buildJShellParams(List<String> commandLineParams) {
-                    final List<String> jshellParams = new ArrayList<>();
-                    final File startupFile = new File("startup.jsh");
-                    if (startupFile.exists()) {
-                        jshellParams.add("--startup");
-                        jshellParams.add(startupFile.toString());
-                    }
-                    jshellParams.addAll(super.buildJShellParams(commandLineParams));
-                    return jshellParams;
+                public JShellShellSession newShellSession(ShellRequest request) {
+                    final JShellShellSession session = new JShellShellSession(this, request) {
+
+                        // Add startup script to the jshell command line (if found)
+                        @Override
+                        protected List<String> modifyJShellParams(List<String> params) {
+                            final File startupFile = new File("startup.jsh");
+                            if (startupFile.exists()) {
+                                params = new ArrayList<>(params);
+                                params.add(0, "--startup");
+                                params.add(1, startupFile.toString());
+                            }
+                            return super.modifyJShellParams(params);
+                        }
+                    };
+
+                    // Configure local execution
+                    session.setLocalContextClassLoader(Thread.currentThread().getContextClassLoader());
+                    return session;
                 }
-            };
-
-            // This fixes some class path and class loader issues
-            command.enableLocalContextExecution();
-
-            // Done
-            return command;
+            });
         }
     }
 }

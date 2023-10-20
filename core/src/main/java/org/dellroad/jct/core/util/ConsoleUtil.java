@@ -31,11 +31,11 @@ public final class ConsoleUtil {
      */
     public static int getJavaVersion() {
         final String vers = System.getProperty("java.version");
-        final Matcher matcher = Pattern.compile("1\\.([0-9]+).*|(9|[1-9][0-9]+)\\..*").matcher(vers);
+        final Matcher matcher = Pattern.compile("((1\\.([0-9]+))|(9|[1-9][0-9]+))(?![0-9]).*").matcher(vers);
         try {
             if (!matcher.matches())
                 throw new NumberFormatException();
-            final String vnum = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+            final String vnum = matcher.group(3) != null ? matcher.group(3) : matcher.group(4);
             return Integer.parseInt(vnum, 10);
         } catch (NumberFormatException e) {
             throw new RuntimeException("can't determine JDK version from \"" + vers + "\"");

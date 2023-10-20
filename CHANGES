@@ -1,7 +1,8 @@
 Version Next
 
-    - A few improvements to MemoryClassLoader.
-    - Added CommandProvider and CommandRegistry.autoGenerate().
+    - A good bit of refactoring overall.
+    - A few improvements to JShell support.
+    - Replaced CommandRegistry with CommandBundle.
 
 Version 1.0.1 Released Aug 12, 2023
 

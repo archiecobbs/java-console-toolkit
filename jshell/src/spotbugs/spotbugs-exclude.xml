@@ -1,12 +1,7 @@
 <FindBugsFilter>
     <Match>
-        <Class name="org.dellroad.jct.jshell.JShellSession"/>
-        <Method name="getTerminal"/>
-        <Bug pattern="EI_EXPOSE_REP"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.jshell.JShellSession"/>
-        <Method name="&lt;init&gt;"/>
+        <Class name="org.dellroad.jct.jshell.JShellShellSession"/>
+        <Method name="setLocalContextClassLoader"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
     <Match>

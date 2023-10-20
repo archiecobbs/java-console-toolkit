@@ -35,7 +35,7 @@ var demo = loader.loadClass("org.dellroad.jct.demo.DemoMain").getMethod("getInst
 
 // Emit a greeting
 out.println();
-out.println("*** Welcome to the java-console-toolkit JShell demo.");
+out.println("*** Welcome to the Java Console Toolkit JShell demo from \"startup.jsh\".");
 for (String[] pair : new String[][] { { "DemoMain", "demo" }, { "JShellShellSession", "session" } })
     out.println(String.format("*** The %s singleton is available as \"%s\".", pair[0], pair[1]));
 out.println();
