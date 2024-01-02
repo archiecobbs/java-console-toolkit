@@ -1,3 +1,7 @@
+Version Next
+
+    - Fix misnamed SimpleShell method: newExecSession() -> newShellSession().
+
 Version 1.0.2 Released October 23, 2023
 
     - A good bit of refactoring overall.

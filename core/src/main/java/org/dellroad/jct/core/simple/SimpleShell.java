@@ -37,7 +37,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
             throw new IllegalArgumentException("null request");
 
         // Return new shell session
-        return this.newExecSession(request, this.buildLineReader(request));
+        return this.newShellSession(request, this.buildLineReader(request));
     }
 
 // Public Methods
@@ -51,7 +51,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if any parameter is null
      */
-    public ShellSession newExecSession(ShellRequest request, LineReader reader) throws IOException {
+    public ShellSession newShellSession(ShellRequest request, LineReader reader) throws IOException {
         return new Session(this, request, reader);
     }
 
