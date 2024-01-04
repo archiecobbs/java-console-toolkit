@@ -1,4 +1,4 @@
-Version Next
+Version 1.0.3
 
     - Fix misnamed SimpleShell method: newExecSession() -> newShellSession().
 
