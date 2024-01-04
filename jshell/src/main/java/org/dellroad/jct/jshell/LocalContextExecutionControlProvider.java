@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -77,6 +78,9 @@ import org.dellroad.stuff.java.MemoryClassLoader;
  * To utilize this class, include the flags returned by {@link #modifyJShellFlags modifyJShellFlags()}
  * as parameters to JShell startup.
  *
+ * <p>
+ * This provider uses a {@link MemoryLoaderDelegate}.
+ *
  * @see <a href="https://bugs.openjdk.org/browse/JDK-8314327">JDK-8314327</a>
  */
 public class LocalContextExecutionControlProvider implements ExecutionControlProvider {
@@ -100,16 +104,12 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
 
-        // Prepare new classpath
-        final StringBuilder classPath = new StringBuilder();
-        final String pathSeparator = System.getProperty("path.separator", ":");
-        final Consumer<Object> pathAdder = obj -> {
-            if (classPath.length() > 0)
-                classPath.append(pathSeparator);
-            classPath.append(obj.toString());
-        };
+        // Use our local execution engine, unless another is specified
+        if (LocalContextExecutionControlProvider.getExecutionFlag(flags) == null)
+            LocalContextExecutionControlProvider.setExecutionFlag(flags, NAME);
 
-        // Visit class loader hierarchy
+        // Visit class loader hierarchy and try to infer application classpath
+        final ArrayList<String> classpath = new ArrayList<>();
         for ( ; loader != null; loader = loader.getParent()) {
 
             // Extract classpath URLs from this loader
@@ -143,34 +143,104 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
                 } catch (IllegalArgumentException | FileSystemNotFoundException e) {
                     continue;
                 }
-                pathAdder.accept(file);
+                classpath.add(file.toString());
             }
         }
 
-        // Extract and consolidate any existing "--class-path" entries with ours;
-        // earlier JDK versions don't allow more than one "--class-path" flag.
+        // Augment "--class-path" command line flag
+        LocalContextExecutionControlProvider.addToClassPath(flags, classpath);
+    }
+
+    /**
+     * Get the execution provider name specified via the {@code --execution} flag, if any.
+     *
+     * @param flags list of command line flags
+     * @return execution provider name configured via {@code --execution} flag, or null if none
+     * @throws IllegalArgumentException if {@code flags} is null
+     * @see ExecutionControlProvider#name
+     */
+    public static String getExecutionFlag(List<String> flags) {
+        final int index = flags.indexOf("--execution");
+        return index >= 0 && index < flags.size() - 1 ? flags.get(index + 1) : null;
+    }
+
+    /**
+     * Modify a list of JShell tool command line flags to force the use of the named
+     * execution provider, overriding any previous.
+     *
+     * @param flags modifiable list of command line flags
+     * @param providerName execution provider name
+     * @throws IllegalArgumentException if {@code flags} is null
+     * @see ExecutionControlProvider#name
+     */
+    public static void setExecutionFlag(List<String> flags, String providerName) {
+
+        // Sanity check
+        if (flags == null)
+            throw new IllegalArgumentException("null flags");
+        if (providerName == null)
+            throw new IllegalArgumentException("null providerName");
+
+        // Use specified execution engine
+        final int index = flags.indexOf("--execution");
+        if (index >= 0) {
+            if (index < flags.size() - 1)
+                flags.set(index + 1, providerName);
+            else
+                flags.add(providerName);    // weird, there was a bogus trailing "--execution" flag
+        } else {
+            flags.add("--execution");
+            flags.add(providerName);
+        }
+    }
+
+    /**
+     * Utility method to modify the given JShell command line flags to add/augment the {@code --class-path}
+     * flag(s) to (also) include the given classpath components.
+     *
+     * @param commandLine jshell command line, possibly including exisiting {@code --class-path} flag(s)
+     * @param components new classpath components to add to {@code commandLine}
+     * @throws IllegalArgumentException if either parameter is null
+     */
+    public static void addToClassPath(List<String> commandLine, List<String> components) {
+
+        // Sanity check
+        if (commandLine == null)
+            throw new IllegalArgumentException("null commandLine");
+        if (components == null)
+            throw new IllegalArgumentException("null components");
+
+        // Prepare new classpath
+        final StringBuilder classPath = new StringBuilder();
+        final String pathSeparator = System.getProperty("path.separator", ":");
+        final Consumer<String> pathAdder = component -> {
+            if (classPath.length() > 0)
+                classPath.append(pathSeparator);
+            classPath.append(component);
+        };
+
+        // Copy any existing classpath components and remove them from the command line
         int i = 0;
-        while (i < flags.size()) {
-            final String flag = flags.get(i);
+        while (i < commandLine.size()) {
+            final String flag = commandLine.get(i);
             if (flag.startsWith("--class-path=")) {
-                flags.remove(i);
+                commandLine.remove(i);
                 pathAdder.accept(flag.substring("--class-path=".length()));
             } else if (flag.equals("--class-path")) {
-                flags.remove(i);
-                if (i < flags.size()) {
-                    pathAdder.accept(flags.get(i));
-                    flags.remove(i);
-                }
+                commandLine.remove(i);
+                if (i < commandLine.size())
+                    pathAdder.accept(commandLine.remove(i));
             } else
                 i++;
         }
 
-        // Add our flags
-        flags.add("--execution");
-        flags.add(NAME);
+        // Append new classpath components
+        components.forEach(pathAdder);
+
+        // Add back combined classpath to the command line (only one "--class-path" flag allowed)
         if (classPath.length() > 0) {
-            flags.add("--class-path");
-            flags.add(classPath.toString());
+            commandLine.add("--class-path");
+            commandLine.add(classPath.toString());
         }
     }
 
