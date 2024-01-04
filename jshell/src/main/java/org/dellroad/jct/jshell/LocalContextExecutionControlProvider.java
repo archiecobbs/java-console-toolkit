@@ -200,7 +200,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         final MemoryLoaderDelegate delegate = this.createMemoryLoaderDelegate(memoryLoader);
 
         // Create local ExecutionControl using delegate
-        return new LocalExecutionControl(delegate);
+        return this.createLocalExecutionControl(delegate);
     }
 
 // Subclass Methods
@@ -211,5 +211,9 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
 
     protected MemoryClassLoader createMemoryClassLoader() {
         return new MemoryClassLoader();
+    }
+
+    protected LocalExecutionControl createLocalExecutionControl(MemoryLoaderDelegate delegate) {
+        return new LocalExecutionControl(delegate);
     }
 }

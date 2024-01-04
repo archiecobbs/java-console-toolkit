@@ -1,6 +1,7 @@
 Version 1.0.3
 
     - Fix misnamed SimpleShell method: newExecSession() -> newShellSession().
+    - Add method LocalContextExecutionControlProvider.createLocalExecutionControl().
     - Add support for jar: URLs in MemoryLoaderDelegate.addToClasspath().
 
 Version 1.0.2 Released October 23, 2023
