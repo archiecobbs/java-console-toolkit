@@ -1,4 +1,4 @@
-Version 1.0.3
+Version 1.0.3 Released January 5, 2024
 
     - Fix misnamed SimpleShell method: newExecSession() -> newShellSession().
     - Add method LocalContextExecutionControlProvider.createLocalExecutionControl().
