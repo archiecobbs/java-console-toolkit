@@ -5,6 +5,13 @@
 #
 # It is NOT in use anywhere on the Internet.
 #
+# To create a key like this for yourself, run this command:
+#
+#   ssh-keygen -f mykey.key
+#
+# When it asks for a passphrase, just hit enter. This will result in
+# an UNENCRYPTED key which can be loaded automatically from a file.
+#
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAYEA46I8wN5+wUrGgVgy6X/uRa1e9Af0E0tA+U8LNWWro1KtI5Kj2tLU
