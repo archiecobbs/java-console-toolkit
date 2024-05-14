@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jdk.jshell.execution.LocalExecutionControl;
 import jdk.jshell.tool.JavaShellToolBuilder;
 
 import org.dellroad.jct.core.AbstractShellSession;
@@ -55,6 +56,11 @@ public class JShellShellSession extends AbstractShellSession {
 
     /**
      * Get the instance associated with the current thread.
+     *
+     * <p>
+     * This value is stored in an {@link InheritableThreadLocal} initialized when the JShell tool is started.
+     * As a result, it is accessible not only from the main JShell  loop but also from the separate snippet
+     * execution threads created by {@link LocalExecutionControl}.
      *
      * @return session associated with the current thread, or null if not found
      */
