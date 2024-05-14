@@ -283,7 +283,16 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         return new MemoryClassLoader();
     }
 
+    /**
+     * Build a new {@link LocalExecutionControl} using the given delegate.
+     *
+     * <p>
+     * The implementation in {@link LocalContextExecutionControlProvider} returns a new {@link LocalContextExecutionControl}.
+     *
+     * @param delegate the delegate to handle loading classes
+     * @return new {@link LocalExecutionControl} instance
+     */
     protected LocalExecutionControl createLocalExecutionControl(MemoryLoaderDelegate delegate) {
-        return new LocalExecutionControl(delegate);
+        return new LocalContextExecutionControl(delegate);
     }
 }
