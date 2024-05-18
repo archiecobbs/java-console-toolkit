@@ -16,9 +16,11 @@ import java.net.URLClassLoader;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import jdk.jshell.execution.LocalExecutionControl;
 import jdk.jshell.execution.LocalExecutionControlProvider;
@@ -108,8 +110,17 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         if (LocalContextExecutionControlProvider.getExecutionFlag(flags) == null)
             LocalContextExecutionControlProvider.setExecutionFlag(flags, NAME);
 
+        // Start by grabbing anything from the "java.class.path" system property
+        final LinkedHashSet<String> classpath = new LinkedHashSet<>();
+        final String cp = System.getProperty("java.class.path");
+        if (cp != null) {
+            for (String item : cp.split(Pattern.quote(File.pathSeparator))) {
+                if (!item.isEmpty())
+                    classpath.add(item);
+            }
+        }
+
         // Visit class loader hierarchy and try to infer application classpath
-        final ArrayList<String> classpath = new ArrayList<>();
         for ( ; loader != null; loader = loader.getParent()) {
 
             // Extract classpath URLs from this loader
@@ -148,7 +159,7 @@ public class LocalContextExecutionControlProvider implements ExecutionControlPro
         }
 
         // Augment "--class-path" command line flag
-        LocalContextExecutionControlProvider.addToClassPath(flags, classpath);
+        LocalContextExecutionControlProvider.addToClassPath(flags, new ArrayList<>(classpath));
     }
 
     /**
