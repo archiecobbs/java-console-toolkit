@@ -1,6 +1,7 @@
 Version Next
 
     - Add new class LocalContextExecutionControl.
+    - A few tweaks to the various JShell class loader hacks.
 
 Version 1.0.3 Released January 5, 2024
 
