@@ -69,8 +69,7 @@ public class JShellShellSession extends AbstractShellSession {
     }
 
     /**
-     * Configure a class loader to use with {@link LocalContextExecutionControlProvider}
-     * for local execution.
+     * Configure a class loader to use with {@link LocalContextExecutionControlProvider} for local execution.
      *
      * @param loader class loader, or null for none
      * @see #modifyJShellParams
@@ -99,13 +98,15 @@ public class JShellShellSession extends AbstractShellSession {
         final JavaShellToolBuilder builder = this.createBuilder();
         final Terminal terminal = this.request.getTerminal();
         final Attributes attr = terminal.enterRawMode();
-        final Thread currentThread = Thread.currentThread();
-        final ClassLoader previousLoader = currentThread.getContextClassLoader();
         final JShellShellSession previousSession = CURRENT_SESSION.get();
         final List<String> jshellParams = this.modifyJShellParams(this.request.getShellArguments());
         if (jshellParams == null)
             throw new IllegalArgumentException("null jshellParams");
         CURRENT_SESSION.set(this);
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader previousLoader = currentThread.getContextClassLoader();
+        if (this.localContextClassLoader != null)
+            currentThread.setContextClassLoader(this.localContextClassLoader);
         try {
             final String[] params = jshellParams.toArray(new String[0]);
             if (ConsoleUtil.getJavaVersion() >= 11) {
@@ -129,7 +130,7 @@ public class JShellShellSession extends AbstractShellSession {
         }
     }
 
-// Subclaass Methods
+// Subclass Methods
 
     /**
      * Create and configure the JShell builder for this new session.
@@ -152,8 +153,6 @@ public class JShellShellSession extends AbstractShellSession {
         builder.out(this.out);
         return builder;
     }
-
-// Subclass Methods
 
     /**
      * Generate a list of command line flags and parameters to be passed to the JShell tool,
