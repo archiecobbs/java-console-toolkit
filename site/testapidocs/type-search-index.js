@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.dellroad.jct.core.simple","l":"SimpleCommandLineParserTest"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"org.dellroad.jct.core.simple","l":"SimpleCommandLineParserTest"}]
