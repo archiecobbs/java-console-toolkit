@@ -17,6 +17,7 @@ import org.dellroad.jct.core.ShellRequest;
 import org.dellroad.jct.core.ShellSession;
 import org.dellroad.jct.core.util.ConsoleUtil;
 import org.jline.terminal.Attributes;
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 
 /**
@@ -145,6 +146,19 @@ public class JShellShellSession extends AbstractShellSession {
                 JavaShellToolBuilder.class.getMethod("interactiveTerminal", Boolean.TYPE).invoke(builder, true);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("unexpected error", e);
+            }
+        }
+        if (ConsoleUtil.getJavaVersion() >= 24) {       // JDK-8332314
+            final Size windowSize = this.request.getTerminal().getSize();
+            if (windowSize != null) {
+                final int cols = windowSize.getColumns();
+                final int rows = windowSize.getRows();
+                try {
+                    // builder.windowSize(cols, rows);
+                    JavaShellToolBuilder.class.getMethod("windowSize", Integer.TYPE, Integer.TYPE).invoke(builder, cols, rows);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException("unexpected error", e);
+                }
             }
         }
         builder.env(this.request.getEnvironment());
