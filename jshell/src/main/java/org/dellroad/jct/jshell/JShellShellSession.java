@@ -139,7 +139,7 @@ public class JShellShellSession extends AbstractShellSession {
      */
     protected JavaShellToolBuilder createBuilder() {
         final JavaShellToolBuilder builder = JavaShellToolBuilder.builder();
-        if (ConsoleUtil.getJavaVersion() >= 17) {
+        if (ConsoleUtil.getJavaVersion() >= 11) {       // JDK-8247403
             try {
                 // builder.interactiveTerminal(true);
                 JavaShellToolBuilder.class.getMethod("interactiveTerminal", Boolean.TYPE).invoke(builder, true);
