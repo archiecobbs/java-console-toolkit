@@ -82,7 +82,7 @@ public class SimpleConsoleSshServer implements Closeable {
         return new Builder();
     }
 
-// SelectorSupport
+// Lifecycle
 
     /**
      * Start this instance.
