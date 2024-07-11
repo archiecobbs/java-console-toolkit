@@ -1,3 +1,7 @@
+Version Next
+
+    - Rebase on dellroad-dependencies to simplify build and update dependencies.
+
 Version 1.0.4 Released May 20, 2024
 
     - Add new class LocalContextExecutionControl.
