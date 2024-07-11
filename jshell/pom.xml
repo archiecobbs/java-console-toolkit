@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.dellroad</groupId>
         <artifactId>java-console-toolkit</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5</version>
     </parent>
     <artifactId>java-console-toolkit-jshell</artifactId>
     <name>Java Console Toolkit JShell support</name>
