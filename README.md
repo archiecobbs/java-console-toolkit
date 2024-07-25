@@ -97,7 +97,7 @@ Note: `JShell` support is only available on JDK 9 or later.
 The **demo** module allows you to test out the current JCT features (and see some sample code):
 
 ```
-$ java -jar java-console-toolkit-demo-1.0.2.jar --help
+$ java -jar java-console-toolkit-demo-1.0.4.jar --help
 Usage:
     jct-demo [options] [command ...]
 
@@ -123,38 +123,45 @@ Commands:
 
   jshell  Fire up a JShell console.
 
-$ java -jar java-console-toolkit-demo-1.0.2.jar date
-Fri Oct 20 15:38:15 CDT 2023
-$ java -jar java-console-toolkit-demo-1.0.2.jar
+$ java -jar java-console-toolkit-demo-1.0.4.jar date
+Thu Jul 25 16:46:43 CDT 2024
+$ java -jar java-console-toolkit-demo-1.0.4.jar
 Welcome to org.dellroad.jct.core.simple.SimpleShell
 jct> help
-  date    Display the current time and date.
-  echo    Echoes command line arguments.
-  exit    Exit the shell.
-  help    Displays information about available commands.
+
+=== Java Console Toolkit built-in simple commands
+
+  date   Display the current time and date.
+  echo   Echoes command line arguments.
+  exit   Exit the shell.
+  help   Displays information about available commands.
+  quit   Exit the shell.
+  sleep  Sleep for a while.
+
+=== Java Console Toolkit JShell commands
+
   jshell  Fire up a JShell console.
-  quit    Exit the shell.
-  sleep   Sleep for a while.
+
 jct> jshell
 
-*** Welcome to the java-console-toolkit JShell demo.
+*** Welcome to the Java Console Toolkit JShell demo from "startup.jsh".
 *** The DemoMain singleton is available as "demo".
 *** The JShellShellSession singleton is available as "session".
 
-|  Welcome to JShell -- Version 20.0.1
+|  Welcome to JShell -- Version 17.0.9
 |  For an introduction type: /help intro
 
 jshell> /vars
-|    ClassLoader loader = org.dellroad.jct.jshell.MemoryClassLoader@23fe1d71
-|    Object session = org.dellroad.jct.jshell.JShellShellSession@4d518b32
-|    PrintStream out = org.dellroad.jct.core.util.ConsoleUtil$1@6304101a
-|    Object demo = org.dellroad.jct.demo.DemoMain@146dfe6
+|    ClassLoader loader = org.dellroad.stuff.java.MemoryClassLoader@548ad73b
+|    Object session = org.dellroad.jct.demo.DemoMain$DemoJShellCommand$1$1@4be27ce4
+|    PrintStream out = org.dellroad.jct.core.util.ConsoleUtil$1@218a3160
+|    Object demo = org.dellroad.jct.demo.DemoMain@5f1147f4
 
 jshell> demo.hashCode()
-$1 ==> 21422054
+$1 ==> 1594968052
 
 jshell> 2 + 2
-$1 ==> 4
+$2 ==> 4
 
 jshell> /exit
 |  Goodbye
