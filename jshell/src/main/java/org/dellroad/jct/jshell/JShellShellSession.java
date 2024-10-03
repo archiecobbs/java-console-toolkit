@@ -115,7 +115,7 @@ public class JShellShellSession extends AbstractShellSession {
                     // return builder.start(jshellParams);
                     return (int)JavaShellToolBuilder.class.getMethod("start", String[].class).invoke(builder, (Object)params);
                 } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException("unexpected error", e);
+                    throw new RuntimeException("unexpected error: " + e.getCause(), e);
                 }
             } else {
                 builder.run(params);
@@ -145,7 +145,7 @@ public class JShellShellSession extends AbstractShellSession {
                 // builder.interactiveTerminal(true);
                 JavaShellToolBuilder.class.getMethod("interactiveTerminal", Boolean.TYPE).invoke(builder, true);
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("unexpected error", e);
+                throw new RuntimeException("unexpected error: " + e.getCause(), e);
             }
         }
         if (ConsoleUtil.getJavaVersion() >= 24) {       // JDK-8332314
@@ -157,7 +157,7 @@ public class JShellShellSession extends AbstractShellSession {
                     // builder.windowSize(cols, rows);
                     JavaShellToolBuilder.class.getMethod("windowSize", Integer.TYPE, Integer.TYPE).invoke(builder, cols, rows);
                 } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException("unexpected error", e);
+                    throw new RuntimeException("unexpected error: " + e.getCause(), e);
                 }
             }
         }
