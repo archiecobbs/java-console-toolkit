@@ -1,6 +1,7 @@
-Version Next
+Version 1.0.5 Released October 4, 2024
 
     - Rebase on dellroad-dependencies to simplify build and update dependencies.
+    - Configure JShell screen dimensions on JDK >= 24
 
 Version 1.0.4 Released May 20, 2024
 
