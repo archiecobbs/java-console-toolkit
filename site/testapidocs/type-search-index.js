@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"org.dellroad.jct.core.simple","l":"SimpleCommandLineParserTest"}]
