@@ -1,4 +1,4 @@
-Version 1.1.0
+Version 1.1.0 Released May 2, 2025
 
     - Make JDK 17 the minimum required level.
     - Rebase JShell support on JavaBox.
