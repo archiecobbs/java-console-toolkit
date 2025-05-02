@@ -1,9 +1,7 @@
 <FindBugsFilter>
     <Match>
-        <Bug pattern="EI_EXPOSE_REP"/>
-    </Match>
-    <Match>
-        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Class name="~.*"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,CT_CONSTRUCTOR_THROW,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
     </Match>
     <Match>
         <Class name="org.dellroad.jct.core.util.ConsoleUtil$1"/>

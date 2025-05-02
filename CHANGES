@@ -1,7 +1,12 @@
+Version 1.1.0
+
+    - Make JDK 17 the minimum required level.
+    - Rebase JShell support on JavaBox.
+
 Version 1.0.5 Released October 4, 2024
 
     - Rebase on dellroad-dependencies to simplify build and update dependencies.
-    - Configure JShell screen dimensions on JDK >= 24
+    - Configure JShell screen dimensions on JDK >= 24.
 
 Version 1.0.4 Released May 20, 2024
 

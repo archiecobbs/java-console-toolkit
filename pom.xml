@@ -8,10 +8,10 @@
     <parent>
         <groupId>org.dellroad</groupId>
         <artifactId>dellroad-dependencies</artifactId>
-        <version>3.2.5.0</version>
+        <version>3.2.11.0</version>
     </parent>
     <artifactId>java-console-toolkit</artifactId>
-    <version>1.0.5</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <name>Java Console Toolkit</name>
@@ -50,16 +50,16 @@
     <properties>
 
         <!-- Basic stuff -->
-        <java.version>8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Root package name -->
         <jct.package.root>org.dellroad.jct</jct.package.root>
 
         <!-- Dependency versions -->
-        <sshd.version>2.10.0</sshd.version>
+        <sshd.version>2.15.0</sshd.version>
+        <javabox.version>1.0.0</javabox.version>
         <testng.version>7.7.1</testng.version>
-        <dellroad-stuff.version>2.5.10</dellroad-stuff.version>
     </properties>
 
     <dependencyManagement>
@@ -70,6 +70,13 @@
                 <groupId>org.apache.sshd</groupId>
                 <artifactId>sshd-osgi</artifactId>
                 <version>${sshd.version}</version>
+            </dependency>
+
+            <!-- JavaBox -->
+            <dependency>
+                <groupId>org.dellroad</groupId>
+                <artifactId>javabox-execution</artifactId>
+                <version>${javabox.version}</version>
             </dependency>
 
             <!-- TestNG -->

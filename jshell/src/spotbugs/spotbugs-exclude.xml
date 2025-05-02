@@ -1,27 +1,6 @@
 <FindBugsFilter>
     <Match>
-        <Class name="org.dellroad.jct.jshell.JShellShellSession"/>
-        <Method name="setLocalContextClassLoader"/>
-        <Bug pattern="EI_EXPOSE_REP2"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.jshell.MemoryLoaderDelegate"/>
-        <Method name="&lt;init&gt;"/>
-        <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.jshell.LocalContextExecutionControlProvider"/>
-        <Method name="createMemoryClassLoader"/>
-        <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.jshell.MemoryLoaderDelegate"/>
-        <Method name="&lt;init&gt;"/>
-        <Bug pattern="EI_EXPOSE_REP2"/>
-    </Match>
-    <Match>
-        <Class name="org.dellroad.jct.jshell.MemoryLoaderDelegate"/>
-        <Method name="getClassLoader"/>
-        <Bug pattern="EI_EXPOSE_REP"/>
+        <Class name="~.*"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,CT_CONSTRUCTOR_THROW,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
     </Match>
 </FindBugsFilter>

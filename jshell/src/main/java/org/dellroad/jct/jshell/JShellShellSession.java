@@ -9,9 +9,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import jdk.jshell.execution.LocalExecutionControl;
 import jdk.jshell.tool.JavaShellToolBuilder;
 
+import org.dellroad.javabox.execution.LocalContextExecutionControlProvider;
 import org.dellroad.jct.core.AbstractShellSession;
 import org.dellroad.jct.core.ShellRequest;
 import org.dellroad.jct.core.ShellSession;
@@ -60,8 +60,8 @@ public class JShellShellSession extends AbstractShellSession {
      *
      * <p>
      * This value is stored in an {@link InheritableThreadLocal} initialized when the JShell tool is started.
-     * As a result, it is accessible not only from the main JShell  loop but also from the separate snippet
-     * execution threads created by {@link LocalExecutionControl}.
+     * As a result, it is accessible not only from the main JShell loop but also from the separate snippet
+     * execution threads created by JShell.
      *
      * @return session associated with the current thread, or null if not found
      */
@@ -140,14 +140,7 @@ public class JShellShellSession extends AbstractShellSession {
      */
     protected JavaShellToolBuilder createBuilder() {
         final JavaShellToolBuilder builder = JavaShellToolBuilder.builder();
-        if (ConsoleUtil.getJavaVersion() >= 11) {       // JDK-8247403
-            try {
-                // builder.interactiveTerminal(true);
-                JavaShellToolBuilder.class.getMethod("interactiveTerminal", Boolean.TYPE).invoke(builder, true);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("unexpected error: " + e.getCause(), e);
-            }
-        }
+        builder.interactiveTerminal(true);
         if (ConsoleUtil.getJavaVersion() >= 24) {       // JDK-8332314
             final Size windowSize = this.request.getTerminal().getSize();
             if (windowSize != null) {
