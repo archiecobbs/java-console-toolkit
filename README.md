@@ -44,7 +44,6 @@ This project is a work in progress.
 **Possible future features:**
 * Glue for Spring Shell
 * Glue for PicoCLI
-* Commands via arbitrary forked `java.lang.Process`
 * More elaborate command line features
   * Persistent history
   * Colors
