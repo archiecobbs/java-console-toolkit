@@ -12,11 +12,11 @@ Suppose you have a Java application of some kind and you want to add a command l
 What are some issues that may come up?
 
 * Can I have auto-discovered "pluggable" commands?
-* Is is possible the make the console accessible securely via SSH?
+* Is it possible to make the console accessible securely via SSH?
 * Can I have bash-like line editing and command history?
 * Can I attach this console to the system console (stdin, stdout, stderr)?
 * Can I implement my own custom read-eval-print loop?
-* Is it possible to integrate [JShell](https://en.wikipedia.org/wiki/JShell) so I can access my Java objects?
+* Is it possible to integrate [JShell](https://en.wikipedia.org/wiki/JShell) so I can access Java objects?
 * Will this console work properly on different operating systems?
 * Is there some simple code that gets me started but doesn't ultimately limit me?
 
@@ -56,13 +56,13 @@ This project is a work in progress.
 
 Let's nail down some concepts used by this library.
 
-An **I/O stream** is a simple byte-oriented conduit, that is, an `InputStream` or an `OutputStream`. Actually we want `PrintStream` instead of `OutputStream` because we're going to assume that there is some known character encoding.
+An **I/O stream** is a simple byte-oriented conduit, that is, an `InputStream` or an `OutputStream`. Actually we want `PrintStream` instead of `OutputStream` because we're going to assume that there is some defined character encoding; this allows us to print text.
 
-A **command** is a lot like a function. It has a name and it takes zero or more parameters which are all strings. Some of the parameters may be flag-like options, but it's really entirely up to the command as to how it interprets the parameters. It executes for a while, does something, and then it completes. On completion, it may or may not return some value, which could boolean (i.e., success or failure), or an integer code (zero for succes, non-zero for error), etc. In this project, commands return integers.
+A **command** is a lot like a function. It has a name and it takes zero or more parameters which are all strings. Some of the parameters may be flag-like options, but it's really entirely up to the command as to how it interprets the parameters. It executes for a while, does something (hopefully useful), and then it completes. It can be interrupted if we get tired of waiting for it to complete. On completion, it may or may not return some value, which could boolean (i.e., success or failure), or an integer code (zero for succes, non-zero for error), etc. In this project, commands return integers.
 
-When a command executes, it is given access to three standard I/O streams: **input**, **output**, and **error**. They will usually contain human-readable content because there's usually a human at the other end, but this is up to the command.
+When a command executes, it is given access to the three standard I/O streams: **input**, **output**, and **error**. They will usually contain human-readable content because there's usually a human at the other end (i.e., using the console), but that is entirely up to the command.
 
-A **terminal** is a text-based user interface. It will be associated with a keyboard of some kind for input and a textual display of some kind for output. Examples include SSH and telnet clients, and the system console from which a Java process is launched. In this project, a terminal is represented by an instance of [JLine3](https://github.com/jline/jline3)'s [`Terminal`](https://www.javadoc.io/doc/org.jline/jline/latest/org/jline/terminal/Terminal.html) class.
+A **terminal** is a text-based user interface. It will be associated with a keyboard of some kind for input and a textual display of some kind for output. Examples include (a server's local representation of) SSH and telnet clients, and the system console from which a Java process is launched. In this project, a terminal is represented by an instance of [JLine3](https://github.com/jline/jline3)'s [`Terminal`](https://www.javadoc.io/doc/org.jline/jline/latest/org/jline/terminal/Terminal.html) class.
 
 A terminal communicates using two underlying I/O streams, one for each direction. The data transmitted on these streams is encoded according to a protocol defined by the **terminal type**. This protocol allows for sending not only normal text "as is" but also special output commands like "clear the screen" and special input commands like "signal an interrupt" (might be sent when someone on the remote end presses Control-C). Using the protocol for sending and receiving "as is" text, a `Terminal` can provide the input and output streams that a command expects.
 
@@ -70,7 +70,7 @@ Note, however, terminals don't have a separate stream for error output: instead,
 
 A **shell** is software that allows a **terminal** to be used interactively to execute commands via some kind of [Read-Eval-Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop). It normally takes a line of text as input, parses it into a command name and arguments, and uses those to choose and execute some command. The shell must implement some kind of syntax and parsing behavior, for example, by splitting on whitespace and providing some way to quote whitespace. There is no universal standard for command line parsing and quoting, so each shell must define its own syntax. Ideally, a shell should also support terminal-enabled features like command line editing, command history, tab completion, etc.
 
-A **subshell** is a shell that is started by executing a command in another, outer shell. Upon exit from the subshell, the outer shell continues as before.
+A **subshell** is a shell that is started by executing a command in another, outer shell. While a subshell is executing, it takes control of the terminal and/or I/O streams of the parent shell. Upon exit from the subshell, the outer shell resumes control and continues as before.
 
 A **batch script** is a text file containing multiple commands intended to be executed non-interactively. The syntax for the file typically closely mirrors the syntax of some shell's interactive input, but no shell is required to execute a batch script. Instead, batch scripts are typically handled by executing a command that takes the script filename as a parameter or reads the script from standard input.
 
@@ -97,7 +97,7 @@ Note: `JShell` support is only available on JDK 9 or later.
 The **demo** module allows you to test out the current JCT features (and see some sample code):
 
 ```
-$ java -jar java-console-toolkit-demo-1.0.4.jar --help
+$ java -jar java-console-toolkit-demo-1.1.0.jar --help
 Usage:
     jct-demo [options] [command ...]
 
@@ -123,9 +123,13 @@ Commands:
 
   jshell  Fire up a JShell console.
 
-$ java -jar java-console-toolkit-demo-1.0.4.jar date
-Thu Jul 25 16:46:43 CDT 2024
-$ java -jar java-console-toolkit-demo-1.0.4.jar
+=== Java Console Toolkit demonstration commands
+
+  exec  Execute an arbitrary system command.
+
+$ java -jar java-console-toolkit-demo-1.1.0.jar date
+Wed Jan 21 15:13:14 CST 2026
+$ java -jar java-console-toolkit-demo-1.1.0.jar
 Welcome to org.dellroad.jct.core.simple.SimpleShell
 jct> help
 
@@ -142,23 +146,27 @@ jct> help
 
   jshell  Fire up a JShell console.
 
+=== Java Console Toolkit demonstration commands
+
+  exec  Execute an arbitrary system command.
+
 jct> jshell
 
 *** Welcome to the Java Console Toolkit JShell demo from "startup.jsh".
 *** The DemoMain singleton is available as "demo".
 *** The JShellShellSession singleton is available as "session".
 
-|  Welcome to JShell -- Version 17.0.9
+|  Welcome to JShell -- Version 17.0.13
 |  For an introduction type: /help intro
 
 jshell> /vars
-|    ClassLoader loader = org.dellroad.stuff.java.MemoryClassLoader@548ad73b
-|    Object session = org.dellroad.jct.demo.DemoMain$DemoJShellCommand$1$1@4be27ce4
-|    PrintStream out = org.dellroad.jct.core.util.ConsoleUtil$1@218a3160
-|    Object demo = org.dellroad.jct.demo.DemoMain@5f1147f4
+|    ClassLoader loader = jdk.internal.loader.ClassLoaders$AppClassLoader@42110406
+|    Object session = org.dellroad.jct.demo.DemoMain$DemoJShellCommand$1$1@68afcd02
+|    PrintStream out = org.dellroad.jct.core.util.ConsoleUtil$1@3682a5b
+|    Object demo = org.dellroad.jct.demo.DemoMain@1f25860f
 
 jshell> demo.hashCode()
-$1 ==> 1594968052
+$1 ==> 522552847
 
 jshell> 2 + 2
 $2 ==> 4
@@ -166,10 +174,12 @@ $2 ==> 4
 jshell> /exit
 |  Goodbye
 jct> echo "foo  bar  \nnext line"
-foo  bar
+foo  bar  
 next line
 jct> sleep 9999
 ^C
+jct> exec bash -c "echo \"this is a test\""
+this is a test
 jct> exit 123
 $ echo $?
 123
