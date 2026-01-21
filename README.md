@@ -88,7 +88,7 @@ Additional "glue":
 
 * [`SimpleConsoleSshServer`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/ssh/simple/SimpleConsoleSshServer.html) - SSH server configured with an `Exec` and/or `Shell`
 * [`JShellShell`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/JShellShell.html) - A `Shell` wrapper around JShell.
-* [`LocalContextExecutionControlProvider`](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/org/dellroad/jct/jshell/command/LocalContextExecutionControlProvider.html) - Workaround for JShell local execution class path/loading issues
+* [`LocalContextExecutionControlProvider`](https://archiecobbs.github.io/javabox/site/apidocs/org/dellroad/javabox/execution/LocalContextExecutionControlProvider.html) - (from [JavaBox](https://github.com/archiecobbs/javabox)) Workaround for JShell local execution class path/loading issues
 
 Note: `JShell` support is only available on JDK 9 or later.
 
