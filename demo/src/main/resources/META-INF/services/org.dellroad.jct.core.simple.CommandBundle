@@ -3,3 +3,6 @@ org.dellroad.jct.core.simple.command.Bundle
 
 # Include the "jshell" command
 org.dellroad.jct.jshell.command.Bundle
+
+# Include our own demo command bundle
+org.dellroad.jct.demo.command.Bundle
