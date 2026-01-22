@@ -3,6 +3,7 @@ org.dellroad.jct.core.simple
 org.dellroad.jct.core.simple.command
 org.dellroad.jct.core.util
 org.dellroad.jct.demo
+org.dellroad.jct.demo.command
 org.dellroad.jct.jshell
 org.dellroad.jct.jshell.command
 org.dellroad.jct.ssh
