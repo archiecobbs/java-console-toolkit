@@ -103,7 +103,7 @@ Usage:
 Options:
     --no-console                 Don't start command line console
     --ssh                        Enable SSH server
-    --ssh-auth-keys-file path    Specify SSH authorized users file (default /Users/archie/.ssh/authorized_keys)
+    --ssh-auth-keys-file path    Specify SSH authorized users file (default ${user.home}/.ssh/authorized_keys)
     --ssh-host-key-file path     Specify SSH host key file (default hostkey)
     --ssh-listen-port port       Specify SSH server TCP port (default 9191)
     --help                       Display this usage message

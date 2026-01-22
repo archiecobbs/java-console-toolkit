@@ -41,6 +41,8 @@ import org.jline.terminal.TerminalBuilder;
  */
 public class DemoMain {
 
+    private static final String AUTHORIZED_KEYS = "authorized_keys";
+
     private static DemoMain instance;
 
     private final List<CommandBundle> commandBundles = CommandBundle.scanAndGenerate().collect(Collectors.toList());
@@ -62,7 +64,7 @@ public class DemoMain {
 
         // Parse command line
         File sshHostKeyFile = this.getDefaultHostKeyFile();
-        File sshAuthKeysFile = this.getDefaultAuthKeysFile();
+        File sshAuthKeysFile = this.defaultAuthKeys().file();
         int sshListenPort = this.getDefaultListenPort();
         final ArrayDeque<String> params = new ArrayDeque<>(Arrays.asList(args));
         boolean ssh = false;
@@ -239,7 +241,7 @@ public class DemoMain {
         out.println(String.format(
           "    --ssh                        Enable SSH server"));
         out.println(String.format(
-          "    --ssh-auth-keys-file path    Specify SSH authorized users file (default %s)", this.getDefaultAuthKeysFile()));
+          "    --ssh-auth-keys-file path    Specify SSH authorized users file (default %s)", this.defaultAuthKeys().display()));
         out.println(String.format(
           "    --ssh-host-key-file path     Specify SSH host key file (default %s)", this.getDefaultHostKeyFile()));
         out.println(String.format(
@@ -251,14 +253,8 @@ public class DemoMain {
         HelpCommand.listCommands(out, this.commandBundles);
     }
 
-    public File getDefaultAuthKeysFile() {
-        String file = "authorized_keys";
-        final String homeDir = System.getProperty("user.home");
-        if (homeDir != null) {
-            final String fs = System.getProperty("file.separator");
-            file = String.format("%s%s%s%s%s", homeDir, fs, ".ssh", fs, file);
-        }
-        return new File(file);
+    public DefaultAuthKeys defaultAuthKeys() {
+        return new DefaultAuthKeys();
     }
 
     public File getDefaultHostKeyFile() {
@@ -286,6 +282,23 @@ public class DemoMain {
 
         // Done
         System.exit(exitValue);
+    }
+
+    private record DefaultAuthKeys(File file, String display) {
+
+        DefaultAuthKeys() {
+            this(System.getProperty("user.home"), System.getProperty("file.separator"));
+        }
+
+        private DefaultAuthKeys(String homeDir, String fs) {
+            this(new File(DefaultAuthKeys.fullPath(homeDir, fs)), DefaultAuthKeys.fullPath("${user.home}", fs));
+        }
+
+        private static String fullPath(String homeDir, String fs) {
+            return homeDir != null ?
+              String.format("%s%s%s%s%s", homeDir, fs, ".ssh", fs, AUTHORIZED_KEYS) :
+              AUTHORIZED_KEYS;
+        }
     }
 
 // DemoJShellCommand
