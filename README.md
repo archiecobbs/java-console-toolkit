@@ -184,6 +184,51 @@ $ echo $?
 123
 ```
 
+Here's an example of running the command line interface on an SSH connection instead of the system console. Doing so allows you to add a sescure SSH console to any Java application, regardless of how it is launched.
+
+In terminal window #1:
+```
+$ ssh-keygen -t ecdsa -f my_host_key
+Generating public/private ecdsa key pair.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in my_host_key
+Your public key has been saved in my_host_key.pub
+The key fingerprint is:
+SHA256:LECChUtYcKMcOjyrIOd1y8vuCI6BRXrhIYvfyW1mqy0 archie@myhost
+The key's randomart image is:
++---[ECDSA 256]---+
+|oB* .            |
+|B+.+             |
+|*=+ .            |
+|oBoo . .         |
+|*.= . o S        |
+|=* + = o         |
+|+ + + B          |
+| + .EB o         |
+|. . o=B          |
++----[SHA256]-----+
+$ java -jar java-console-toolkit-demo-1.1.0.jar --ssh --ssh-host-key-file my_host_key --no-console
+INFO: No detected/configured IoServiceFactoryFactory; using Nio2ServiceFactoryFactory
+jct-demo: started SSH server on port 9191
+...
+```
+In terminal window #2:
+```
+$ ssh -p 9191 localhost
+The authenticity of host '[localhost]:9191 ([127.0.0.1]:9191)' can't be established.
+ECDSA key fingerprint is SHA256:LECChUtYcKMcOjyrIOd1y8vuCI6BRXrhIYvfyW1mqy0.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '[localhost]:9191' (ECDSA) to the list of known hosts.
+Welcome to org.dellroad.jct.core.simple.SimpleShell
+jct> echo test "1  2  3"
+test 1  2  3
+jct> quit
+Connection to localhost closed.
+```
+
+
 ### More Docs
 
 * [Javadocs API](https://archiecobbs.github.io/java-console-toolkit/site/apidocs/index.html)
