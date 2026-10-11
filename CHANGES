@@ -1,3 +1,7 @@
+Version 1.2.0
+
+    - Update dependency versions
+
 Version 1.1.0 Released May 2, 2025
 
     - Make JDK 17 the minimum required level.
