@@ -110,19 +110,10 @@ public class JShellShellSession extends AbstractShellSession {
             currentThread.setContextClassLoader(this.localContextClassLoader);
         try {
             final String[] params = jshellParams.toArray(new String[0]);
-            if (ConsoleUtil.getJavaVersion() >= 11) {
-                try {
-                    // return builder.start(jshellParams);
-                    return (int)JavaShellToolBuilder.class.getMethod("start", String[].class).invoke(builder, (Object)params);
-                } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException("unexpected error: " + e.getCause(), e);
-                }
-            } else {
-                builder.run(params);
-                return 0;
-            }
+            return builder.start(params);
         } catch (Exception e) {
-            this.out.println(String.format("Error: %s", e));
+            this.getErrorStream().println(String.format("Error: %s", e));
+            e.printStackTrace(this.getErrorStream());
             return 1;
         } finally {
             CURRENT_SESSION.set(previousSession);
