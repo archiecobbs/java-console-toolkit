@@ -215,7 +215,7 @@ public final class SshUtil {
             return false;
 
         // Update size
-        terminal.setSize(new Size(cols, rows));
+        terminal.setSize(Size.of(cols, rows));
         return true;
     }
 }
