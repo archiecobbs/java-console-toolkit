@@ -59,7 +59,7 @@
         <!-- Dependency versions -->
         <sshd.version>2.20.0</sshd.version>
         <javabox.version>1.3.0</javabox.version>
-        <jline.version>4.4.7</jline.version>
+        <jline.version>4.4.8</jline.version>
         <testng.version>7.7.1</testng.version>
     </properties>
 
