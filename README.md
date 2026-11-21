@@ -9,47 +9,18 @@ There are lots of bits and pieces out there that can be useful for adding a comm
 
 Suppose you have a Java application of some kind and you want to add a command line interface (CLI).
 
-What are some issues that may come up?
+What are some of the features you might want?
 
-* Can I have auto-discovered "pluggable" commands?
-* Is it possible to make the console accessible securely via SSH?
-* Can I have bash-like line editing and command history?
-* Can I attach this console to the system console (stdin, stdout, stderr)?
-* Can I implement my own custom read-eval-print loop?
-* Is it possible to integrate [JShell](https://en.wikipedia.org/wiki/JShell) so I can access Java objects?
-* Will this console work properly on different operating systems?
-* Is there some simple code that gets me started but doesn't ultimately limit me?
+* Direct **[JShell](https://en.wikipedia.org/wiki/JShell)** integration, allowing **direct access to your Java objects**
+* Access your running application **securely over SSH** (using public key authentication)
+* Bash-like **line editing** and **command history**
+* Implement **custom CLI commands** with "pluggable" **auto-discovery**
+* Attach to the **system console** (stdin, stdout, stderr)
+* Implement your own **custom read-eval-print loop** if desired
+* Run portably on **different operating systems**
+* Simple enough to **get started quickly** but doesn't ultimately limit you
 
-This project seeks to clarify these questions and allow you to answer YES.
-
-### Status
-
-This project is a work in progress.
-
-**Features implemented so far:**
-* Command and shell abstractions
-* Direct command execution from command line
-* Basic command line parser with quoting
-* Basic command shell with read-eval-print loop (REPL)
-* Terminal line editing support via Jline3
-* SSH server integration
-  * Public key authentication (required)
-  * SSH remote command execution
-  * SSH remote shell execution
-* JShell integration
-  * Direct execution as primary shell
-  * Subshell execution via separate command
-  * Local execution + class path/loading fixes
-
-**Possible future features:**
-* Glue for Spring Shell
-* Glue for PicoCLI
-* More elaborate command line features
-  * Persistent history
-  * Colors
-  * Etc.
-* Batch script support
-* Your well designed contributions
+This project seeks to provide all of the above.
 
 ### JCT Concepts
 
@@ -67,7 +38,7 @@ A terminal communicates using two underlying I/O streams, one for each direction
 
 Note, however, terminals don't have a separate stream for error output: instead, any command error output is instead just treated like normal output. Using this simple trick, a terminal can provide any command with the three I/O streams it needs. Therefore, any command can execute on either three raw streams or on a terminal. However, the converse is not always true: some commands may _require_ a terminal to function properly, for example, a text editor.
 
-A **shell** is software that allows a **terminal** to be used interactively to execute commands via some kind of [Read-Eval-Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop). It normally takes a line of text as input, parses it into a command name and arguments, and uses those to choose and execute some command. The shell must implement some kind of syntax and parsing behavior, for example, by splitting on whitespace and providing some way to quote whitespace. There is no universal standard for command line parsing and quoting, so each shell must define its own syntax. Ideally, a shell should also support terminal-enabled features like command line editing, command history, tab completion, etc.
+A **shell** is software that allows a **terminal** to be used interactively to execute **commands** via some kind of [Read-Eval-Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop). It normally takes a line of text as input, parses it into a command name and arguments, and uses those to choose and execute some command. The shell must implement some kind of syntax and parsing behavior, for example, by splitting on whitespace and providing some way to quote whitespace. There is no universal standard for command line parsing and quoting, so each shell must define its own syntax. Ideally, a shell should also support terminal-enabled features like command line editing, command history, tab completion, etc.
 
 A **subshell** is a shell that is started by executing a command in another, outer shell. While a subshell is executing, it takes control of the terminal and/or I/O streams of the parent shell. Upon exit from the subshell, the outer shell resumes control and continues as before.
 
@@ -93,7 +64,7 @@ Note: `JShell` support is only available on JDK 9 or later.
 
 ### Demonstration
 
-The **demo** module allows you to test out the current JCT features (and see some sample code):
+The **demo** module allows you to test out the current JCT features and see some sample code:
 
 ```
 $ java -jar java-console-toolkit-demo-1.1.0.jar --help
@@ -109,6 +80,7 @@ Options:
     --help                       Display this usage message
 
 Commands:
+
 === Java Console Toolkit built-in simple commands
 
   date   Display the current time and date.
@@ -127,9 +99,11 @@ Commands:
   exec  Execute an arbitrary system command.
 
 $ java -jar java-console-toolkit-demo-1.1.0.jar date
-Wed Jan 21 15:13:14 CST 2026
+Sat Nov 21 12:44:57 CST 2026
 $ java -jar java-console-toolkit-demo-1.1.0.jar
+
 Welcome to org.dellroad.jct.core.simple.SimpleShell
+
 jct> help
 
 === Java Console Toolkit built-in simple commands
