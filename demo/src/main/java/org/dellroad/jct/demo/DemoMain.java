@@ -250,6 +250,7 @@ public class DemoMain {
           "    --help                       Display this usage message"));
         out.println();
         out.println(String.format("Commands:"));
+        out.println();
         HelpCommand.listCommands(out, this.commandBundles);
     }
 

@@ -61,7 +61,7 @@ public class SimpleShell extends SimpleCommandSupport implements Shell {
      * @return welcome greeting, or null for none
      */
     public String getGreeting() {
-        return "Welcome to " + this.getClass().getName();
+        return String.format("%nWelcome to %s%n", this.getClass().getName());
     }
 
     /**
